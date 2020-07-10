@@ -1,0 +1,40 @@
+version: "2.3"
+
+services:
+
+
+  gateway:
+    container_name : gateway
+    build: ./gateway
+    network_mode: host
+    command: nodemon server.js
+    environment:
+      - RABBIT_MQ_HOST=localhost:5673
+      - RABBIT_MQ_USER=root
+      - RABBIT_MQ_PASSWORD=epharmacy
+    volumes:
+      - ./gateway:/node/epharmacy/app
+      - ./common:/node/epharmacy/common
+    ports:
+      - "4500:3500"
+    restart: always
+
+  user:
+    container_name : user
+    build: ./user
+    network_mode: host
+    command: nodemon server.js
+    environment:
+      - RABBIT_MQ_HOST=localhost:5673
+      - RABBIT_MQ_USER=root
+      - RABBIT_MQ_PASSWORD=epharmacy
+    volumes:
+      - ./user:/node/epharmacy/app
+      - ./common:/node/epharmacy/common
+    restart: always
+
+networks:
+  default:
+    external:
+      name: epharmacy
+
