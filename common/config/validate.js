@@ -1,3 +1,4 @@
+var ObjectId = require('mongoose').Types.ObjectId;
 validator.registerAsync('exists', async (value, attributes, field_name, passes) => {
 
     let attr_bits = attributes.split(',');
@@ -75,4 +76,27 @@ validator.registerAsync('isPositive', async (value, attributes, field_name, pass
 
 });
 
+
+validator.registerAsync('objectId', async (value, attributes, field_name, passes) => {
+
+    value = ObjectId.isValid(value);
+    if (value) {
+        passes(true);
+    } else {
+        passes(false, 'Given ' + field_name + ' is not a valid id');
+    }
+
+});
+
+
+validator.registerAsync('array', async (value, attributes, field_name, passes) => {
+
+    value = Array.isArray(value);
+    if (value) {
+        passes(true);
+    } else {
+        passes(false, 'Given ' + field_name + ' is not a arrayy');
+    }
+
+});
 

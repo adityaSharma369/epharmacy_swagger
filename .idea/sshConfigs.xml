@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="52.221.46.156" id="aa79f668-c147-4582-81d9-b159e85c3714" keyPath="$PROJECT_DIR$/../../ssh_files/tericsoft_general_purpose_dev.pem" port="22" nameFormat="DESCRIPTIVE" username="ubuntu" />
+    </configs>
+  </component>
+</project>

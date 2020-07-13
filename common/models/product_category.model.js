@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let TokenSchema = new Schema({
-	user_id: {
+	product_id: {
 		type: Schema.Types.ObjectId,
 		required: true
 	},
-	token: {
-		type: String,
+	category_id: {
+		type: Schema.Types.ObjectId,
 		required: true
 	},
 	is_active: {
@@ -22,4 +22,4 @@ let TokenSchema = new Schema({
 });
 
 // Export the model
-module.exports = mongoose.model('Token', TokenSchema);
+module.exports = mongoose.model('product_category', TokenSchema);

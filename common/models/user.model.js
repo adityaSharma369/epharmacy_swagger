@@ -20,9 +20,6 @@ let UserSchema = Schema({
         isActive: {
             type: Boolean
         },
-        registrationType: {
-            type: String
-        },
         profilePic: {
             type: String
         },

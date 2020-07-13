@@ -1,0 +1,242 @@
+var express = require('express');
+var router = express.Router();
+
+
+router.post('/list', function (req, res) {
+
+    try {
+
+        var rules = {};
+
+        var validation = new validator(req.body, rules);
+
+        validation.fails(() => {
+            return res.err({
+                errors: validation.errors.errors,
+                http_code: 400
+            });
+        });
+
+
+        validation.passes(() => {
+            var search = req.body.search;
+            var limit = req.body.limit;
+            var page = req.body.page;
+            var role = req.body.role;
+
+            var _payload = {
+                search: search,
+                page: page,
+                limit: limit,
+                role: role
+            };
+
+            fn.Execute(req, _payload, "user.list", 10000).then((data, err) => {
+                data = JSON.parse(data.toString());
+                return res.respond(data);
+            })
+                .catch(res.err);
+        });
+    } catch (e) {
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+
+
+});
+
+router.post('/listLite', function (req, res) {
+
+    try {
+
+        fn.Execute(req, null, "user.listLite", 10000).then((data, err) => {
+            data = JSON.parse(data.toString());
+            return res.respond(data);
+        })
+            .catch(res.err);
+    } catch (e) {
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+
+
+});
+
+router.post('/add', function (req, res) {
+
+    try {
+
+        var rules = {
+            username: 'required',
+            mobile: 'required',
+            email: 'required|email',
+            password: 'required',
+            role: 'required',
+        };
+
+        var validation = new validator(req.body, rules);
+
+        validation.fails(() => {
+            return res.err({
+                errors: validation.errors.errors,
+                http_code: 400
+            });
+        });
+
+        validation.passes(() => {
+            var username = req.body.username;
+            var email = req.body.email;
+            var mobile = req.body.mobile;
+            var password = req.body.password;
+            var role = req.body.role;
+            var _payload = {
+                username: username,
+                email: email,
+                mobile: mobile,
+                password: password,
+                role: role,
+            };
+            fn.Execute(req, _payload, "user.add", 10000).then((data, err) => {
+                data = JSON.parse(data.toString());
+                return res.respond(data);
+            })
+                .catch(res.err);
+        });
+    } catch (e) {
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+});
+
+router.post('/view', function (req, res) {
+
+    try {
+
+        var rules = {
+            user_id: 'required'
+        };
+
+        var validation = new validator(req.body, rules);
+
+        validation.fails(() => {
+            return res.err({
+                errors: validation.errors.errors,
+                http_code: 400
+            });
+        });
+
+        validation.passes(() => {
+            var user_id = req.body.user_id;
+
+            var _payload = {
+                user_id: user_id
+            };
+
+            fn.Execute(req, _payload, "user.view", 1000).then((data, err) => {
+                data = JSON.parse(data.toString());
+                return res.respond(data);
+            })
+                .catch(res.err);
+        });
+    } catch (e) {
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+
+
+});
+
+router.post('/edit', function (req, res) {
+
+    try {
+
+        var rules = {
+            user_id: 'required'
+        };
+
+        var validation = new validator(req.body, rules);
+
+        validation.fails(() => {
+            return res.err({
+                errors: validation.errors.errors,
+                http_code: 400
+            });
+        });
+
+        validation.passes(() => {
+            var user_id = req.body.user_id;
+            var email = req.body.email;
+            var mobile = req.body.mobile;
+            var role = req.body.role;
+
+            var _payload = {
+                user_id: user_id,
+                email: email,
+                mobile: mobile,
+                role: role,
+            };
+
+            fn.Execute(req, _payload, "user.edit", 1000).then((data, err) => {
+                data = JSON.parse(data.toString());
+                return res.respond(data);
+            })
+                .catch(res.err);
+        });
+    } catch (e) {
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+
+
+});
+
+router.post('/delete', function (req, res) {
+
+    try {
+
+        var rules = {
+            user_id: 'required'
+        };
+
+        var validation = new validator(req.body, rules);
+
+        validation.fails(() => {
+            return res.err({
+                errors: validation.errors.errors,
+                http_code: 400
+            });
+        });
+
+        validation.passes(() => {
+            var user_id = req.body.user_id;
+            var _payload = {
+                user_id: user_id,
+            };
+            fn.Execute(req, _payload, "user.delete", 1000).then((data, err) => {
+                data = JSON.parse(data.toString());
+                return res.respond(data);
+            })
+                .catch(res.err);
+        });
+    } catch (e) {
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+
+
+});
+
+
+module.exports = router;

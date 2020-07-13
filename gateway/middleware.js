@@ -16,19 +16,16 @@ let middleware = {
             _controller = req.originalUrl.split('/')[1];
             _action = req.originalUrl.split('/')[2];
             is_protected = false;
-            console.log('/' + guest_endpoints.indexOf('/' + _controller + '/' + '*') + '/' + guest_endpoints.indexOf('/' + _controller + '/' + _action));
 
             if (guest_endpoints.indexOf('/' + _controller + '/' + '*') === -1 && guest_endpoints.indexOf('/' + _controller + '/' + _action) === -1) {
                 is_protected = true;
             }
-            console.log(is_protected)
             if (is_protected) {
                 modelFn.model('token')
                     .findOne({
                         token: token
                     })
                     .then((table_token) => {
-                        console.log("tokeeeeeeeeeeenenenenene", table_token)
                         if (table_token != null) {
                             if (!table_token['is_active']) {
                                 return res.respond({
@@ -48,7 +45,6 @@ let middleware = {
                                     error: "invalid token"
                                 })
                             } else {
-                                console.log(token);
                                 jwt.verify(token, JWT_SECRET, (err, decoded) => {
                                     if (err) {
                                         return res.respond({

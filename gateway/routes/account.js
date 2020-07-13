@@ -93,4 +93,69 @@ router.post('/editProfile', function (req, res) {
     }).catch(res.err);
 });
 
+router.get('/addAddress', function (req, res) {
+     try {
+
+        var rules = {
+            title: 'required|min:1|max:100',
+            lat: 'required',
+            lng: 'required',
+            full_address: 'required|min:10',
+        };
+        var validation = new validator(req.body, rules);
+        validation.fails(() => {
+            return res.respond({errors: validation.errors.errors, http_code: 400})
+        });
+        validation.passes(() => {
+            var user_id = _currentUser._id
+            var title = req.body.title;
+            var lat = req.body.lat;
+            var lng = req.body.lng;
+            var full_address = req.body.full_address;
+
+            var _payload = {
+                user_id: user_id,
+                title: title,
+                lat: lat,
+                lng: lng,
+                full_address: full_address,
+            };
+            fn.Execute(req, _payload, "user.address.add", 10000).then((data, err) => {
+                data = JSON.parse(data.toString());
+                return res.respond(data);
+            })
+                .catch(res.err);
+        });
+    } catch (e) {
+        console.log(e)
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+});
+
+router.post('/getAddress', function (req, res) {
+     try {
+            var user_id = _currentUser._id;
+            var search = req.body.search();
+
+            var _payload = {
+                user_id: user_id,
+                search:search
+            };
+
+            fn.Execute(req, _payload, "user.address.list", 10000).then((data, err) => {
+                data = JSON.parse(data.toString());
+                return res.respond(data);
+            })
+                .catch(res.err);
+    } catch (e) {
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+});
+
 module.exports = router;
