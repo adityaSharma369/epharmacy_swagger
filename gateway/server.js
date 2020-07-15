@@ -19,6 +19,20 @@ env = process.env;
 middleware = require("./middleware")
 helpers = require("./helper")
 fn = require("../common/config/rMQ")
+
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, './uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, uuid.v4() + '.' + mime.getExtension(file.mimetype));
+    }
+  });
+
+upload = multer({ storage: storage });
+
+
 app.use(cors());
 
 app.use(express.urlencoded({
@@ -46,7 +60,9 @@ mdb.InItMongoDb(env.MONGO_DB_DBNAME)
 
 app.use(helpers.gatewayResponse);
 app.use(middleware.parseJwt);
+app.use(middleware.checkRole);
 
+app.use('/static', express.static(path.join(__dirname, 'uploads')));
 let routers = fs.readdirSync('routes/');
 routers.forEach(router => {
     router = router.replace('.js', '');

@@ -12,6 +12,7 @@ services:
       - RABBIT_MQ_HOST=localhost:5673
       - RABBIT_MQ_USER=root
       - RABBIT_MQ_PASSWORD=epharmacy
+      - CURRENT_DOMAIN=http://52.221.46.156:4500/static
     volumes:
       - ./gateway:/node/epharmacy/app
       - ./common:/node/epharmacy/common
@@ -22,13 +23,14 @@ services:
   user:
     container_name: user
     build: ./user
-    network_mode: host
     command: nodemon server.js
+    network_mode: host
     environment:
       - RABBIT_MQ_HOST=localhost:5673
       - RABBIT_MQ_USER=root
       - RABBIT_MQ_PASSWORD=epharmacy
       - RABBIT_MQ_PATTERN=user.*
+      - CURRENT_DOMAIN=http://52.221.46.156:4500/static
     volumes:
       - ./user:/node/epharmacy/app
       - ./common:/node/epharmacy/common
@@ -38,13 +40,14 @@ services:
   inventory:
     container_name: inventory
     build: ./inventory
-    network_mode: host
     command: nodemon server.js
+    network_mode: host
     environment:
       - RABBIT_MQ_HOST=localhost:5673
       - RABBIT_MQ_USER=root
       - RABBIT_MQ_PASSWORD=epharmacy
       - RABBIT_MQ_PATTERN=inventory.*
+      - CURRENT_DOMAIN=http://52.221.46.156:4500/static
     volumes:
       - ./inventory:/node/epharmacy/app
       - ./common:/node/epharmacy/common

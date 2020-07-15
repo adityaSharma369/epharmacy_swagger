@@ -11,7 +11,7 @@ router.post('/list', function (req, res) {
 
         var _payload = {
             search: search,
-            category_id:category_id
+            category_id: category_id
         };
         fn.Execute(req, _payload, "inventory.product.list", 10000).then((data, err) => {
             data = JSON.parse(data.toString());
@@ -107,7 +107,7 @@ router.post('/view', function (req, res) {
     try {
 
         var rules = {
-            category_id: 'required'
+            product_id: 'required'
         };
 
         var validation = new validator(req.body, rules);
@@ -117,13 +117,13 @@ router.post('/view', function (req, res) {
         });
 
         validation.passes(async () => {
-            let category_id = req.body.category_id;
+            let product_id = req.body.product_id;
 
             var _payload = {
-                category_id: category_id
+                product_id: product_id
             };
 
-            fn.Execute(req, _payload, "inventory.category.view", 1000).then((data, err) => {
+            fn.Execute(req, _payload, "inventory.product.view", 1000).then((data, err) => {
                 data = JSON.parse(data.toString());
                 return res.respond(data);
             })
@@ -144,7 +144,7 @@ router.post('/edit', function (req, res) {
     try {
 
         const rules = {
-            product_id:"required",
+            product_id: "required",
             categories: "array"
         };
         const validation = new validator(req.body, rules);
@@ -160,7 +160,7 @@ router.post('/edit', function (req, res) {
             const categories = req.body.categories;
 
             const _payload = {
-                product_id:product_id,
+                product_id: product_id,
                 title: title,
                 description: description,
                 price: price,
@@ -176,7 +176,6 @@ router.post('/edit', function (req, res) {
                 .catch(res.err);
         });
     } catch (e) {
-        console.log(e,"---------------------------------------------------")
         return res.err({
             error: "something went wrong",
             http_code: 500
@@ -191,6 +190,92 @@ router.post('/delete', function (req, res) {
     try {
 
         var rules = {
+            product_id: 'required'
+        };
+
+        var validation = new validator(req.body, rules);
+
+        validation.fails(() => {
+            return res.err({
+                errors: validation.errors.errors,
+                http_code: 400
+            });
+        });
+
+        validation.passes(() => {
+            var product_id = req.body.product_id;
+            var _payload = {
+                product_id: product_id,
+            };
+            fn.Execute(req, _payload, "inventory.product.delete", 1000).then((data, err) => {
+                data = JSON.parse(data.toString());
+                return res.respond(data);
+            })
+                .catch(res.err);
+        });
+    } catch (e) {
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+
+
+});
+
+router.post('/uploadImage', upload.single("image"), function (req, res) {
+    try {
+        var rules = {
+            product_id: 'required',
+        };
+        var validation = new validator(req.body, rules);
+
+        validation.fails(() => {
+            return res.err({
+                errors: validation.errors.errors,
+                http_code: 400
+            });
+        });
+        validation.passes(() => {
+            const image = req.file
+            const product_id = req.body.product_id
+            const target_path = './uploads/product_images/' + product_id
+            if (!fs.existsSync(target_path)) {
+                fs.mkdirSync(target_path, {recursive: true});
+            }
+            fs.rename("./uploads/" + image.filename, target_path + "/" + image.filename, function (err) {
+                if (err) {
+                    return res.err({
+                        error: err,
+                        http_code: 500
+                    });
+                }
+            })
+            var _payload = {
+                product_id: product_id,
+                image: image
+            };
+            fn.Execute(req, _payload, "inventory.product.uploadImage", 1000).then((data, err) => {
+                data = JSON.parse(data.toString());
+                return res.respond(data);
+            }).catch(res.err);
+        });
+    } catch (e) {
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+
+
+});
+
+router.post('/linkCategory', function (req, res) {
+
+    try {
+
+        var rules = {
+            product_id: "required",
             category_id: 'required'
         };
 
@@ -205,10 +290,55 @@ router.post('/delete', function (req, res) {
 
         validation.passes(() => {
             var category_id = req.body.category_id;
+            var product_id = req.body.product_id;
+
             var _payload = {
                 category_id: category_id,
+                product_id: product_id
             };
-            fn.Execute(req, _payload, "inventory.category.delete", 1000).then((data, err) => {
+            fn.Execute(req, _payload, "inventory.product.linkCategory", 1000).then((data, err) => {
+                data = JSON.parse(data.toString());
+                return res.respond(data);
+            })
+                .catch(res.err);
+        });
+    } catch (e) {
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+
+
+});
+
+router.post('/unlinkCategory', function (req, res) {
+
+    try {
+
+        var rules = {
+            product_id: "required",
+            category_id: 'required'
+        };
+
+        var validation = new validator(req.body, rules);
+
+        validation.fails(() => {
+            return res.err({
+                errors: validation.errors.errors,
+                http_code: 400
+            });
+        });
+
+        validation.passes(() => {
+            var category_id = req.body.category_id;
+            var product_id = req.body.product_id;
+
+            var _payload = {
+                category_id: category_id,
+                product_id: product_id
+            };
+            fn.Execute(req, _payload, "inventory.product.unlinkCategory", 1000).then((data, err) => {
                 data = JSON.parse(data.toString());
                 return res.respond(data);
             })

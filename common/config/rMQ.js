@@ -1,5 +1,4 @@
 let amqp = require('amqplib/callback_api');
-
 let rabbitMQconn;
 let rabbitMQchan;
 
@@ -170,11 +169,6 @@ const Execute = (req, data, route, timeOut = 100) => new Promise((resolve, rejec
     if (req.user && req.user.user.customer !== undefined) {
         data["customer_id"] = req.user.user.customer
     }
-
-    if (req.user && req.user.user.driver !== undefined) {
-        data["driver_id"] = req.user.user.driver._id
-    }
-
     let msg = JSON.stringify(data);
     rabbitMQchan.responseEmitter.once(correlationId, resolve);
     publish(exchange, route, Buffer.from(msg), correlationId)

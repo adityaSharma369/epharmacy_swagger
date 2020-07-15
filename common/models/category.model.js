@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-let TokenSchema = new Schema({
+let CategoryScema = new Schema({
     title: {
         type: String,
         required: true
@@ -44,4 +44,4 @@ let TokenSchema = new Schema({
 });
 
 // Export the model
-module.exports = mongoose.model('category', TokenSchema);
+module.exports = mongoose.model('category', CategoryScema);

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-let TokenSchema = new Schema({
+let ProductSchema = new Schema({
     title: {
         type: String,
         required: true
@@ -40,4 +40,4 @@ let TokenSchema = new Schema({
 });
 
 // Export the model
-module.exports = mongoose.model('product', TokenSchema);
+module.exports = mongoose.model('product', ProductSchema);

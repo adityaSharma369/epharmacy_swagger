@@ -16,6 +16,8 @@ require('../common/config/validate.js');
 env = process.env;
 
 JWT_SECRET=env.JWT_SECRET
+CURRENT_DOMAIN=env.CURRENT_DOMAIN
+
 RabbitMQChannel = null;
 exchange = env.RABBIT_MQ_EXCHANGE_NAME;
 queue_name = env.RABBIT_MQ_QUEUE_NAME;

@@ -12,10 +12,13 @@ var functions = {
                 }
             }
             filter["is_active"] = true
-            fn.paginate("category", filter, "", limit, page, {"_created": -1}).then((data) => {
-                data.docs.forEach(element => {
-                    element.password = undefined;
-                });
+            fn.paginate("category", filter, "", limit, page, {"_created": -1}).then(async (data) => {
+                for (i = 0; i < data.docs.length; i++) {
+                    data.docs[i]['_doc']['products_count'] = await fn.model("product_category").find({
+                        "category_id": data.docs[i]._id,
+                    }).count();
+                    data.docs[i] = {...data.docs[i]['_doc']};
+                }
                 return res.replyBack({msg: 'category list', data: data, http_code: 200})
             }).catch((err) => {
                 return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -26,12 +29,16 @@ var functions = {
                 error: 'something went wrong', http_code: 500
             });
         }
-
     },
 
     listLite: (req, res) => {
         try {
             var filter = {"is_active": true}
+             if (typeof req.body.search != "undefined") {
+                filter = {
+                    $or: [{title: {$regex: req.body.search, $options: 'si'}}]
+                }
+            }
             fn.model('category').find(filter).select('_id title').then((data) => {
                 return res.replyBack({msg: 'category list', data: data, http_code: 200})
             })
@@ -162,7 +169,27 @@ var functions = {
 
             validation.passes(async () => {
                 let category_id = req.body.category_id;
-                fn.model('category').findOne({_id: category_id}).then((data) => {
+                fn.model('category').findOne({_id: category_id}).then(async (data) => {
+
+                    const tempData = await fn.model("product_category").find({"category_id": category_id});
+                    const product_ids = []
+                    tempData.forEach(category => {
+                        product_ids.push(category.product_id)
+                    })
+
+                    data['_doc']["products"] = await fn.model("product").find({"_id": {"$in": product_ids}});
+                    for (i = 0; i < data['_doc']["products"].length; i++) {
+                        data['_doc']["products"][i]["_doc"]["image"] = await fn.model("product_image").findOne({
+                            "product_id": data['_doc']["products"][i]._id,
+                            "is_primary": true,
+                        });
+                        if( data['_doc']["products"][i]["_doc"]["image"] !== undefined && data['_doc']["products"][i]["_doc"]["image"] !== null){
+                            data['_doc']["products"][i]["_doc"]["image"]["image"] = CURRENT_DOMAIN + "/product_images/" + data['_doc']["products"][i]._id + "/" + data['_doc']["products"][i]["_doc"]["image"]["image"]
+                            data['_doc']["products"][i]["image"] = {...data['_doc']["products"][i]["_doc"]["image"]};
+                        }
+                    }
+                    data["products"] = {...data['_doc']};
+
                     return res.replyBack({msg: 'category view', data: data, http_code: 200})
                 }).catch((err) => {
                     return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -180,6 +207,43 @@ var functions = {
     },
 
     delete: (req, res) => {
+        try {
+            var rules = {
+                category_id: 'required|exists:category,_id'
+            };
+            var validation = new validator(req.body, rules);
+            validation.fails(() => {
+                return res.replyBack({errors: validation.errors.errors, http_code: 400});
+            });
+            validation.passes(async () => {
+                let category_id = req.body.category_id;
+                var _payload = {
+                    "is_active": false
+                }
+                fn.model('category')
+                    .findOne({
+                        _id: category_id
+                    })
+                    .then((category) => {
+                        category.updateOne(_payload)
+                            .then((data) => {
+                                return res.replyBack({msg: 'category deleted', http_code: 200});
+                            })
+                            .catch((err) => {
+                                return res.replyBack({ex: fn.err_format(err), http_code: 500});
+                            });
+                    });
+            });
+
+        } catch (e) {
+            console.log("error", e)
+            return res.replyBack({
+                error: 'something went wrong', http_code: 500
+            });
+        }
+    },
+
+    listTree: (req, res) => {
         try {
             var rules = {
                 category_id: 'required|exists:category,_id'

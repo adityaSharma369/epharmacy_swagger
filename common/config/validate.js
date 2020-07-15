@@ -90,13 +90,27 @@ validator.registerAsync('objectId', async (value, attributes, field_name, passes
 
 
 validator.registerAsync('array', async (value, attributes, field_name, passes) => {
-
-    value = Array.isArray(value);
-    if (value) {
-        passes(true);
+    if (Array.isArray(value)) {
+        // if (attributes !== undefined) {
+        //     value.forEach((element) => {
+        //         console.log(typeof element)
+        //         if (attributes === "string") {
+        //             if (typeof element !== 'string') {
+        //                 passes(false, 'array value must be string ');
+        //                 return;
+        //             }
+        //         } else if (attributes === "numeric") {
+        //             if (typeof element !== "number") {
+        //                 passes(false, 'array value must be numeric');
+        //                 return;
+        //             }
+        //         }
+        //     });
+        // } else {
+            passes(true)
+        // }
     } else {
-        passes(false, 'Given ' + field_name + ' is not a arrayy');
+        passes(false, 'Given ' + field_name + ' is not a array');
     }
-
 });
 

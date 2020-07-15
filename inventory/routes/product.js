@@ -1,5 +1,5 @@
 var functions = {
-    list: (req, res) => {
+    list: async (req, res) => {
 
         try {
 
@@ -18,20 +18,39 @@ var functions = {
                     }]
                 }
             }
-            if(category_id !== undefined){
-                const productsArray = []
-                fn.model("product_category").find({"category_id":category_id}).then((data)=>{
-                    data.forEach((product)=>{
-                        productsArray.push(product._id)
+            if (category_id !== undefined) {
+                let productsArray = []
+                await fn.model("product_category").find({"category_id": category_id}).then((data) => {
+                    data.forEach((product) => {
+                        productsArray.push(product.product_id)
                     })
                 })
-                filter["_id"]={"$in":productsArray}
+                console.log(productsArray,"====")
+                filter["_id"] = {"$in": productsArray}
             }
             filter["is_active"] = true
-            fn.paginate("product", filter, "", limit, page, {"_created": -1}).then((data) => {
-                data.docs.forEach(element => {
-                    element.password = undefined;
-                });
+            fn.paginate("product", filter, "", limit, page, {"_created": -1}).then(async (data) => {
+                for (i = 0; i < data.docs.length; i++) {
+                    data.docs[i]['_doc']['image'] = await fn.model("product_image").findOne({
+                        "product_id": data.docs[i]._id,
+                        "is_primary": true
+                    });
+                    if (data.docs[i]['_doc']['image'] !== undefined && data.docs[i]['_doc']['image'] !== null) {
+
+                        data.docs[i]['_doc']['image']["image"] = CURRENT_DOMAIN + "/product_images/" + data.docs[i]._id + "/" + data.docs[i]['_doc']['image']["image"]
+                        data.docs[i] = {...data.docs[i]['_doc']};
+                    }
+                    let categoryIds = []
+                    await fn.model("product_category").find({"product_id": data.docs[i]._id}).then(temp => {
+                        console.log(temp, "-====")
+                        for (let j = 0; j < temp.length; j++) {
+                            categoryIds.push(temp[j].category_id)
+                        }
+                    })
+
+                    data.docs[i]['categories'] = await fn.model("category").find({"_id": {"$in": categoryIds}});
+                    // data.docs[i]["categories"] = {...data['_doc']};
+                }
                 return res.replyBack({msg: 'product list', data: data, http_code: 200})
             }).catch((err) => {
                 return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -47,8 +66,18 @@ var functions = {
     listLite: (req, res) => {
         try {
             var filter = {"is_active": true}
-            fn.model('category').find(filter).select('_id title').then((data) => {
-                return res.replyBack({msg: 'category list', data: data, http_code: 200})
+            if (typeof req.body.search != "undefined") {
+                filter = {
+                    $or: [{title: {$regex: req.body.search, $options: 'si'}}, {
+                        title: {
+                            $regex: req.body.search,
+                            $options: 'si'
+                        },
+                    }]
+                }
+            }
+            fn.model('product').find(filter).select('_id title').then((data) => {
+                return res.replyBack({msg: 'product list', data: data, http_code: 200})
             })
                 .catch((err) => {
                     return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -69,7 +98,7 @@ var functions = {
                 description: 'required',
                 price: "required",
                 manufacturer: "required",
-                categories: "required|array"
+                categories: "required|array:string"
             };
             const validation = new validator(req.body, rules);
             validation.fails(() => {
@@ -181,7 +210,7 @@ var functions = {
                                                     categoryArray.push(linkData)
                                                 }
                                             );
-                                            fn.model("product_category").insertMany(categoryArray).then((data23)=>{
+                                            fn.model("product_category").insertMany(categoryArray).then((data23) => {
                                             }).catch((err) => {
                                                 return res.replyBack({ex: fn.err_format(err), http_code: 500});
                                             })
@@ -209,24 +238,38 @@ var functions = {
     view: (req, res) => {
         try {
 
-            var rules = {
-                category_id: 'required|exists:category,_id'
+            const rules = {
+                product_id: 'required|exists:product,_id'
             };
 
-            var validation = new validator(req.body, rules);
+            const validation = new validator(req.body, rules);
 
             validation.fails(() => {
                 return res.replyBack({errors: validation.errors.errors, http_code: 400});
             });
 
             validation.passes(async () => {
-                let category_id = req.body.category_id;
-                fn.model('category').findOne({_id: category_id}).then((data) => {
-                    return res.replyBack({msg: 'category view', data: data, http_code: 200})
+                let product_id = req.body.product_id;
+                fn.model('product').findOne({_id: product_id}).then(async (data) => {
+                    data['_doc']["image"] = await fn.model("product_image").find({"product_id": product_id});
+                    for (let i = 0; i < data["_doc"]["image"].length; i++) {
+                        data["_doc"]["image"][i]["image"] = CURRENT_DOMAIN + "/product_images/" + product_id + "/" + data["_doc"]["image"][i]["image"]
+                    }
+                    data["image"] = {...data['_doc']};
+
+                    let tempData = await fn.model("product_category").find({"product_id": product_id});
+                    let category_ids = []
+                    await tempData.forEach(category => {
+                        category_ids.push(category.category_id)
+                    })
+
+                    data['_doc']["categories"] = await fn.model("category").find({"_id": {"$in": category_ids}});
+                    data["categories"] = {...data['_doc']["categories"]};
+
+                    return res.replyBack({msg: 'product view', data: data, http_code: 200})
                 }).catch((err) => {
                     return res.replyBack({ex: fn.err_format(err), http_code: 500});
                 });
-
             });
 
         } catch (e) {
@@ -240,25 +283,25 @@ var functions = {
     delete: (req, res) => {
         try {
             var rules = {
-                category_id: 'required|exists:category,_id'
+                product_id: 'required|exists:product,_id'
             };
             var validation = new validator(req.body, rules);
             validation.fails(() => {
                 return res.replyBack({errors: validation.errors.errors, http_code: 400});
             });
             validation.passes(async () => {
-                let category_id = req.body.category_id;
+                let product_id = req.body.product_id;
                 var _payload = {
                     "is_active": false
                 }
-                fn.model('category')
+                fn.model('product')
                     .findOne({
-                        _id: category_id
+                        _id: product_id
                     })
                     .then((category) => {
                         category.updateOne(_payload)
                             .then((data) => {
-                                return res.replyBack({msg: 'category deleted', http_code: 200});
+                                return res.replyBack({msg: 'product deleted', http_code: 200});
                             })
                             .catch((err) => {
                                 return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -272,6 +315,104 @@ var functions = {
             });
         }
     },
+
+    linkCategory: (req, res) => {
+        var rules = {
+            product_id: "required|exists:product,_id",
+            category_id: 'required|exists:category,_id'
+        };
+
+        var validation = new validator(req.body, rules);
+
+        validation.fails(() => {
+            return res.err({
+                errors: validation.errors.errors,
+                http_code: 400
+            });
+        });
+
+        validation.passes(() => {
+            var category_id = req.body.category_id;
+            var product_id = req.body.product_id;
+            const linkData = {
+                product_id: product_id,
+                category_id: category_id,
+                is_active: true
+            }
+            fn.model("product_category")(linkData).save().then(() => {
+                    return res.replyBack({msg: 'product linked', data: linkData, http_code: 200});
+                }
+            ).catch((err) => {
+                return res.replyBack({ex: fn.err_format(err), http_code: 500});
+            })
+        });
+    },
+
+    unlinkCategory: (req, res) => {
+        var rules = {
+            product_id: "required|exists:product,_id",
+            category_id: 'required|exists:category,_id'
+        };
+
+        var validation = new validator(req.body, rules);
+
+        validation.fails(() => {
+            return res.err({
+                errors: validation.errors.errors,
+                http_code: 400
+            });
+        });
+
+        validation.passes(() => {
+            var category_id = req.body.category_id;
+            var product_id = req.body.product_id;
+            fn.model("product_category").deleteMany({"product_id": product_id, "category_id": category_id}).then(() => {
+                    return res.replyBack({msg: 'product unlinked', data: linkData, http_code: 200});
+                }
+            ).catch((err) => {
+                return res.replyBack({ex: fn.err_format(err), http_code: 500});
+            })
+        });
+    },
+
+    uploadImage: (req, res) => {
+        try {
+            var rules = {
+                product_id: 'required|exists:product,_id',
+                image: 'required'
+            };
+            var validation = new validator(req.body, rules);
+            validation.fails(() => {
+                return res.replyBack({errors: validation.errors.errors, http_code: 400});
+            });
+            validation.passes(async () => {
+                const product_id = req.body.product_id;
+                const image = req.body.image.filename;
+                const product_image = {
+                    product_id: product_id,
+                    image: image,
+                    is_primary: true,
+                    is_active: true,
+                    priority: 1
+                }
+                fn.model('product_image')(product_image).save()
+                    .then(() => {
+                        return res.replyBack({msg: 'product  image uploaded', data: product_image, http_code: 200});
+
+                    })
+                    .catch((err) => {
+                        return res.replyBack({ex: fn.err_format(err), http_code: 500});
+                    });
+                ;
+            });
+
+        } catch (e) {
+            return res.replyBack({
+                error: 'something went wrong', http_code: 500
+            });
+        }
+    },
+
 };
 
 module.exports = functions;

@@ -50,7 +50,11 @@ var functions = {
     listLite: (req, res) => {
 
         try {
-            fn.model('user').find(null).select('_id username email').then((data) => {
+            let filter = {}
+            if (req.body.role !== undefined) {
+                filter["role"] = req.body.role
+            }
+            fn.model('user').find(filter).select('_id username email').then((data) => {
                 return res.replyBack({msg: 'user list', data: data, http_code: 200})
             })
                 .catch((err) => {
@@ -165,18 +169,21 @@ var functions = {
             validation.passes(async () => {
                 let user_id = req.body.user_id;
                 var _payload = {}
-                if (typeof req.body.username != "undefined") {
+                if (typeof req.body.username !== "undefined") {
                     _payload["username"] = req.body.username
                 }
 
-                if (typeof req.body.mobile != "undefined") {
+                if (typeof req.body.mobile !== "undefined") {
                     _payload["mobile"] = req.body.mobile
                 }
 
-                if (typeof req.body.email != "undefined") {
+                if (typeof req.body.email !== "undefined") {
                     _payload["email"] = req.body.email
                 }
-
+                if (typeof req.body.password !== "undefined") {
+                    const hash = bcrypt.hashSync(req.body.password, 5);
+                    _payload["password"] = hash
+                }
                 fn.model('user')
                     .findOne({
                         _id: user_id

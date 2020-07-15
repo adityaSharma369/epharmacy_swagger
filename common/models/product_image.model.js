@@ -1,13 +1,21 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-let ProductCategory = new Schema({
+let ProductImage = new Schema({
 	product_id: {
 		type: Schema.Types.ObjectId,
 		required: true
 	},
-	category_id: {
-		type: Schema.Types.ObjectId,
+	image: {
+		type: String,
+		required: true
+	},
+    is_primary: {
+		type: Boolean,
+		required: true
+	},
+    priority: {
+		type: Number,
 		required: true
 	},
 	is_active: {
@@ -22,4 +30,4 @@ let ProductCategory = new Schema({
 });
 
 // Export the model
-module.exports = mongoose.model('product_category', ProductCategory);
+module.exports = mongoose.model('product_images', ProductImage);
