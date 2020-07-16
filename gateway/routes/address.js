@@ -1,16 +1,16 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 
 
 router.post('/list', function (req, res) {
 
     try {
 
-        var rules = {
+        let rules = {
             "user_id": "required"
         };
 
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
 
         validation.fails(() => {
             return res.err({
@@ -21,9 +21,9 @@ router.post('/list', function (req, res) {
 
 
         validation.passes(() => {
-            var user_id = req.body.user_id;
+            let user_id = req.body.user_id;
 
-            var _payload = {
+            let _payload = {
                 user_id: user_id
             };
 
@@ -46,11 +46,11 @@ router.post('/list', function (req, res) {
 router.post('/listLite', function (req, res) {
 
     try {
-        var rules = {
+        let rules = {
             "user_id": "required"
         };
 
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
 
         validation.fails(() => {
             return res.err({
@@ -61,9 +61,9 @@ router.post('/listLite', function (req, res) {
 
 
         validation.passes(() => {
-            var user_id = _currentUser._id;
+            let user_id = req.body.user_id;
 
-            var _payload = {
+            let _payload = {
                 user_id: user_id
             };
 
@@ -87,30 +87,36 @@ router.post('/add', function (req, res) {
 
     try {
 
-        var rules = {
+        let rules = {
             title: 'required|min:1|max:100',
-            lat: 'required',
-            lng: 'required',
-            full_address: 'required|min:10',
+            location: 'required',
+            place: 'required',
+            city:'required',
+            state:'required',
+            pin_code:'required',
             user_id:'required'
         };
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
         validation.fails(() => {
             return res.respond({errors: validation.errors.errors, http_code: 400})
         });
         validation.passes(() => {
-            var user_id = req.body.user_id
-            var title = req.body.title;
-            var lat = req.body.lat;
-            var lng = req.body.lng;
-            var full_address = req.body.full_address;
+            let user_id = req.body.user_id
+            let title = req.body.title;
+            let location = req.body.location;
+            let place = req.body.place;
+            let city = req.body.city;
+            let state = req.body.state;
+            let pin_code = req.body.pin_code;
 
-            var _payload = {
+            let _payload = {
                 user_id: user_id,
                 title: title,
-                lat: lat,
-                lng: lng,
-                full_address: full_address,
+                location: location,
+                place: place,
+                city: city,
+                state: state,
+                pin_code:pin_code
             };
             fn.Execute(req, _payload, "user.address.add", 10000).then((data, err) => {
                 data = JSON.parse(data.toString());
@@ -131,11 +137,11 @@ router.post('/view', function (req, res) {
 
     try {
 
-        var rules = {
+        let rules = {
             address_id: 'required'
         };
 
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
 
         validation.fails(() => {
             return res.respond({errors: validation.errors.errors, http_code: 400});
@@ -144,7 +150,7 @@ router.post('/view', function (req, res) {
         validation.passes(async () => {
             let address_id = req.body.address_id;
 
-            var _payload = {
+            let _payload = {
                 address_id: address_id
             };
 
@@ -168,28 +174,32 @@ router.post('/edit', function (req, res) {
 
     try {
 
-        var rules = {
+        let rules = {
             address_id: 'required',
         };
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
         validation.fails(() => {
             return res.respond({errors: validation.errors.errors, http_code: 400})
         });
         validation.passes(() => {
-            var address_id = req.body.address_id
-            var title = req.body.title;
-            var lat = req.body.lat;
-            var lng = req.body.lng;
-            var full_address = req.body.full_address;
+            let address_id = req.body.address_id
+            let title = req.body.title;
+            let location = req.body.location;
+            let place = req.body.place;
+            let city = req.body.city;
+            let state = req.body.state;
+            let pin_code = req.body.pin_code
 
-            var is_primary = req.body.is_primary;
+            let is_primary = req.body.is_primary;
 
-            var _payload = {
+            let _payload = {
                 address_id: address_id,
                 title: title,
-                lat: lat,
-                lng: lng,
-                full_address: full_address,
+                location: location,
+                place: place,
+                city: city,
+                state: state,
+                pin_code:pin_code,
                 is_primary: is_primary
             };
 
@@ -214,11 +224,11 @@ router.post('/delete', function (req, res) {
 
     try {
 
-        var rules = {
+        let rules = {
             address_id: 'required'
         };
 
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
 
         validation.fails(() => {
             return res.err({
@@ -228,8 +238,8 @@ router.post('/delete', function (req, res) {
         });
 
         validation.passes(() => {
-            var address_id = req.body.address_id;
-            var _payload = {
+            let address_id = req.body.address_id;
+            let _payload = {
                 address_id: address_id,
             };
             fn.Execute(req, _payload, "user.address.delete", 1000).then((data, err) => {

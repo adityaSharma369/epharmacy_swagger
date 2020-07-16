@@ -25,7 +25,6 @@ var functions = {
                         productsArray.push(product.product_id)
                     })
                 })
-                console.log(productsArray,"====")
                 filter["_id"] = {"$in": productsArray}
             }
             filter["is_active"] = true
@@ -42,14 +41,13 @@ var functions = {
                     }
                     let categoryIds = []
                     await fn.model("product_category").find({"product_id": data.docs[i]._id}).then(temp => {
-                        console.log(temp, "-====")
                         for (let j = 0; j < temp.length; j++) {
                             categoryIds.push(temp[j].category_id)
                         }
                     })
 
                     data.docs[i]['categories'] = await fn.model("category").find({"_id": {"$in": categoryIds}});
-                    // data.docs[i]["categories"] = {...data['_doc']};
+                    data.docs[i]["category_ids"] = categoryIds;
                 }
                 return res.replyBack({msg: 'product list', data: data, http_code: 200})
             }).catch((err) => {
@@ -264,8 +262,13 @@ var functions = {
                     })
 
                     data['_doc']["categories"] = await fn.model("category").find({"_id": {"$in": category_ids}});
+                    let categoryIds = []
+                    for (let i = 0; i < data["_doc"]["categories"].length; i++) {
+                        categoryIds.push(data["_doc"]["categories"][i]._id)
+                    }
                     data["categories"] = {...data['_doc']["categories"]};
-
+                    data['_doc']["category_ids"] = category_ids;
+                    data["category_ids"] = data['_doc']["category_ids"]
                     return res.replyBack({msg: 'product view', data: data, http_code: 200})
                 }).catch((err) => {
                     return res.replyBack({ex: fn.err_format(err), http_code: 500});

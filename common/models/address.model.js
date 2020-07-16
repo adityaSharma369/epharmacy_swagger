@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let Address = new Schema({
-    "title": {
+    title: {
         type: String,
         required: true
     },
@@ -10,17 +10,25 @@ let Address = new Schema({
         type: Schema.Types.ObjectId,
         required: true
     },
-    lat: {
-        type: String,
-        required: true
+    location :{
+        type: Array,
+        required:false,
     },
-    lng: {
-        type: String,
-        required: true
+    place:{
+      type: String,
+      required:false
     },
-    full_address: {
+    city:{
         type: String,
-        required: true,
+        required: false,
+    },
+    state:{
+        type: String,
+        required:false
+    },
+    pin_code:{
+        type: Number,
+        required:false
     },
     is_primary: {
         type: Boolean,

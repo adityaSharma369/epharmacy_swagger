@@ -18,6 +18,10 @@ let CategoryScema = new Schema({
         type: String,
         required: false
     },
+    type: {
+        type: String,
+        required: false
+    },
     parent_id: {
         type: Schema.Types.ObjectId,
         required: false

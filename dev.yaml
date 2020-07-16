@@ -13,6 +13,7 @@ services:
       - RABBIT_MQ_USER=root
       - RABBIT_MQ_PASSWORD=epharmacy
       - CURRENT_DOMAIN=http://52.221.46.156:4500/static
+      - MONGO_DB_DBNAME=epharmacy
     volumes:
       - ./gateway:/node/epharmacy/app
       - ./common:/node/epharmacy/common
@@ -31,6 +32,8 @@ services:
       - RABBIT_MQ_PASSWORD=epharmacy
       - RABBIT_MQ_PATTERN=user.*
       - CURRENT_DOMAIN=http://52.221.46.156:4500/static
+      - MONGO_DB_DBNAME=epharmacy
+
     volumes:
       - ./user:/node/epharmacy/app
       - ./common:/node/epharmacy/common
@@ -48,8 +51,28 @@ services:
       - RABBIT_MQ_PASSWORD=epharmacy
       - RABBIT_MQ_PATTERN=inventory.*
       - CURRENT_DOMAIN=http://52.221.46.156:4500/static
+      - MONGO_DB_DBNAME=epharmacy
+
     volumes:
       - ./inventory:/node/epharmacy/app
+      - ./common:/node/epharmacy/common
+    restart: always
+
+  ecommerce:
+    container_name: ecommerce
+    build: ./ecommerce
+    command: nodemon server.js
+    network_mode: host
+    environment:
+      - RABBIT_MQ_HOST=localhost:5673
+      - RABBIT_MQ_USER=root
+      - RABBIT_MQ_PASSWORD=epharmacy
+      - RABBIT_MQ_PATTERN=ecommerce.*
+      - CURRENT_DOMAIN=http://52.221.46.156:4500/static
+      - MONGO_DB_DBNAME=epharmacy
+
+    volumes:
+      - ./ecommerce:/node/epharmacy/app
       - ./common:/node/epharmacy/common
     restart: always
 

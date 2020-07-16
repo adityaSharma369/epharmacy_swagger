@@ -1,12 +1,12 @@
-var functions = {
+let functions = {
     list: (req, res) => {
 
         try {
-            var rules = {
+            let rules = {
                 user_id: 'required|exists:user,_id'
             };
 
-            var validation = new validator(req.body, rules);
+            let validation = new validator(req.body, rules);
 
             validation.fails(() => {
                 return res.replyBack({errors: validation.errors.errors, http_code: 400});
@@ -52,19 +52,19 @@ var functions = {
     },
 
     listLite: (req, res) => {
-        var rules = {
+        let rules = {
             user_id: 'required|exists:user,_id'
         };
 
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
 
         validation.fails(() => {
             return res.replyBack({errors: validation.errors.errors, http_code: 400});
         });
         try {
-            var filter = {"user_id": req.body.user_id, "is_active": true}
-            fn.model('address').find(filter).select('_id title fulladdress').then((data) => {
-                return res.replyBack({msg: 'user list', data: data, http_code: 200})
+            let filter = {"user_id": req.body.user_id, "is_active": true}
+            fn.model('address').find(filter).select('_id title place state city location').then((data) => {
+                return res.replyBack({msg: 'user address list', data: data, http_code: 200})
             })
                 .catch((err) => {
                     return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -81,40 +81,46 @@ var functions = {
 
     add: (req, res) => {
         try {
-            var rules = {
+            let rules = {
                 title: 'required|min:1|max:100',
-                lat: 'required|numeric',
-                lng: 'required|numeric',
-                full_address: 'required|min:10',
-                user_id:'required|exists:user,_id'
+                location: 'required|array',
+                place: 'required',
+                city: 'required',
+                state: 'required',
+                pin_code: 'required',
+                user_id: 'required'
             };
-            var validation = new validator(req.body, rules);
+            let validation = new validator(req.body, rules);
             validation.fails(() => {
                 return res.replyBack({errors: validation.errors.errors, http_code: 400})
             });
             validation.passes(() => {
-                var user_id = req.body.user_id
-                var title = req.body.title;
-                var lat = req.body.lat;
-                var lng = req.body.lng;
-                var full_address = req.body.full_address;
+                let user_id = req.body.user_id
+                let title = req.body.title;
+                let location = req.body.location;
+                let place = req.body.place;
+                let city = req.body.city;
+                let state = req.body.state;
+                let pin_code = req.body.pin_code;
 
+                let _payload = {
+                    user_id: user_id,
+                    title: title,
+                    location: location,
+                    place: place,
+                    city: city,
+                    state: state,
+                    pin_code: pin_code,
+                    is_active: true,
+                    is_primary: true
+                };
 
                 fn.model('address')
                     .updateMany({
                             user_id: user_id
                         }, {"is_primary": false}
                     ).then((data) => {
-                    var user = new fn.model('address')(
-                        {
-                            user_id: user_id,
-                            title: title,
-                            lat: lat,
-                            lng: lng,
-                            full_address: full_address,
-                            is_active: true,
-                            is_primary:true
-                        });
+                    let user = new fn.model('address')(_payload);
                     user.save()
                         .then((data) => {
                             data.full_address = undefined;
@@ -137,34 +143,39 @@ var functions = {
 
     edit: (req, res) => {
         try {
-            var rules = {
-                address_id: 'required|exists:address,_id'
+            let rules = {
+                address_id: 'required|exists:address,_id',
+                location: 'array',
             };
-            var validation = new validator(req.body, rules);
+            let validation = new validator(req.body, rules);
             validation.fails(() => {
                 return res.replyBack({errors: validation.errors.errors, http_code: 400});
             });
             validation.passes(async () => {
                 let address_id = req.body.address_id;
 
-                var _payload = {}
+                let _payload = {}
 
                 if (typeof req.body.title != "undefined") {
                     _payload["title"] = req.body.title
                 }
 
-                if (typeof req.body.full_address != "undefined") {
-                    _payload["full_address"] = req.body.full_address
+                if (typeof req.body.place != "undefined") {
+                    _payload["place"] = req.body.place
                 }
-
-                if (typeof req.body.lat != "undefined") {
-                    _payload["lat"] = req.body.lat
+                if (typeof req.body.city != "undefined") {
+                    _payload["city"] = req.body.city
                 }
-
-                if (typeof req.body.lng != "undefined") {
-                    _payload["lng"] = req.body.lng
+                if (typeof req.body.state != "undefined") {
+                    _payload["state"] = req.body.state
                 }
-
+                if (typeof req.body.pin_code != "undefined") {
+                    _payload["pin_code"] = req.body.pin_code
+                }
+                if (typeof req.body.location != "undefined") {
+                    console.log(req.body.location)
+                    _payload["location"] = req.body.location
+                }
                 if (typeof req.body.is_active != "undefined") {
                     _payload["is_active"] = req.body.is_active
                 }
@@ -199,11 +210,11 @@ var functions = {
     view: (req, res) => {
         try {
 
-            var rules = {
+            let rules = {
                 address_id: 'required|exists:address,_id'
             };
 
-            var validation = new validator(req.body, rules);
+            let validation = new validator(req.body, rules);
 
             validation.fails(() => {
                 return res.replyBack({errors: validation.errors.errors, http_code: 400});
@@ -230,16 +241,16 @@ var functions = {
 
     delete: (req, res) => {
         try {
-            var rules = {
+            let rules = {
                 address_id: 'required|exists:address,_id'
             };
-            var validation = new validator(req.body, rules);
+            let validation = new validator(req.body, rules);
             validation.fails(() => {
                 return res.replyBack({errors: validation.errors.errors, http_code: 400});
             });
             validation.passes(async () => {
                 let address_id = req.body.address_id;
-                var _payload = {
+                let _payload = {
                     "is_active": false
                 }
                 fn.model('address')

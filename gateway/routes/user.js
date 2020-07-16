@@ -176,12 +176,14 @@ router.post('/edit', function (req, res) {
             var email = req.body.email;
             var mobile = req.body.mobile;
             var role = req.body.role;
+            var password = req.body.password;
 
             var _payload = {
                 user_id: user_id,
                 email: email,
                 mobile: mobile,
                 role: role,
+                password:password
             };
 
             fn.Execute(req, _payload, "user.edit", 1000).then((data, err) => {

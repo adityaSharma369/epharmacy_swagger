@@ -27,7 +27,7 @@ router.post('/login', function (req, res) {
 
 router.post('/register', function (req, res) {
     var rules = {
-        email: 'required|email|unique:user',
+        email: 'required|email',
         username: 'required',
         password: 'required'
     };

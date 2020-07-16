@@ -61,6 +61,7 @@ router.post('/add', function (req, res) {
         var rules = {
             title: 'required|min:1|max:100',
             description: 'required',
+            type: 'required',
             parent_id:"objectId"
         };
         var validation = new validator(req.body, rules);
@@ -71,11 +72,13 @@ router.post('/add', function (req, res) {
             var title = req.body.title;
             var description = req.body.description;
             var parent_id = req.body.parent_id;
+            var type = req.body.type;
 
             var _payload = {
                 title: title,
                 description: description,
                 parent_id:parent_id,
+                type:type
             };
             fn.Execute(req, _payload, "inventory.category.add", 10000).then((data, err) => {
                 data = JSON.parse(data.toString());

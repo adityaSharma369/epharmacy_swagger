@@ -60,7 +60,8 @@ var functions = {
             var rules = {
                 title: 'required|min:1|max:100',
                 description: 'required',
-                parent_id: "objectId|exists:category,_id"
+                parent_id: "objectId|exists:category,_id",
+                type:"required",
             };
             var validation = new validator(req.body, rules);
             validation.fails(() => {
@@ -69,6 +70,7 @@ var functions = {
             validation.passes(() => {
                 var title = req.body.title;
                 var description = req.body.description;
+                var type = req.body.type;
                 var parent_id = req.body.parent_id;
 
                 var categoryData = {
@@ -76,6 +78,7 @@ var functions = {
                     description: description,
                     is_visible: true,
                     is_active: true,
+                    type:type,
                     is_primary: true,
                     priority: 1
                 }
@@ -92,8 +95,7 @@ var functions = {
                         return res.replyBack({ex: fn.err_format(err), http_code: 500});
                     });
             });
-        } catch
-            (e) {
+        } catch (e) {
             console.log("error", e)
             return res.replyBack({
                 error: 'something went wrong', http_code: 500

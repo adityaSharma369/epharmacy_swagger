@@ -1,13 +1,13 @@
-var functions = {
+let functions = {
 
         login: function (req, res) {
             try {
-                var rules = {
+                let rules = {
                     username: 'required',
                     password: 'required'
                 };
 
-                var validation = new validator(req.body, rules);
+                let validation = new validator(req.body, rules);
 
                 validation.fails(() => {
                     return res.replyBack({errors: validation.errors.errors, http_code: 400});
@@ -15,8 +15,8 @@ var functions = {
 
                 validation.passes(async () => {
 
-                    var email = req.body.username;
-                    var password = req.body.password;
+                    let email = req.body.username;
+                    let password = req.body.password;
 
                     fn.model('user')
                         .findOne({
@@ -24,13 +24,14 @@ var functions = {
                         })
                         .select('email username role is_active password')
                         .then((data) => {
+                            console.log(data,"-----------------------------------------")
                             if (data == null) {
                                 return res.replyBack({
                                     http_code: 400,
                                     error: 'account not found'
                                 });
                             }
-                            var user = data.toObject()
+                            let user = data.toObject()
                             if (!user || !user.is_active || !bcrypt.compareSync(password, user.password)) {
                                 return res.replyBack({
                                     http_code: 401,
@@ -38,7 +39,7 @@ var functions = {
                                 });
                             } else {
                                 delete user['password'];
-                                var token = jwt.sign(user, JWT_SECRET, {
+                                let token = jwt.sign(user, JWT_SECRET, {
                                     expiresIn: "2 days"
                                 });
                                 let tokenObj = new fn.model('token')({
@@ -78,13 +79,13 @@ var functions = {
 
         register: function (req, res) {
             try {
-                var rules = {
-                    email: 'required|email|unique:user',
+                let rules = {
+                    email: 'required|email',
                     username: 'required',
                     password: 'required'
                 };
 
-                var validation = new validator(req.body, rules);
+                let validation = new validator(req.body, rules);
 
                 validation.fails(() => {
                     return res.replyBack({errors: validation.errors.errors, http_code: 400});
@@ -92,12 +93,12 @@ var functions = {
 
                 validation.passes(async () => {
 
-                    var email = req.body.email;
-                    var username = req.body.username;
-                    var password = req.body.password;
-                    var isEmailVerified = req.body.is_email_verified
-                    var isMobileVerified = req.body.is_mobile_verified
-                    var registrationType = req.body.registrationType
+                    let email = req.body.email;
+                    let username = req.body.username;
+                    let password = req.body.password;
+                    let isEmailVerified = req.body.is_email_verified
+                    let isMobileVerified = req.body.is_mobile_verified
+                    let registrationType = req.body.registrationType
                     password = bcrypt.hashSync(password, 5);
 
                     insertUserData = {
@@ -149,11 +150,11 @@ var functions = {
 
         checkLogin: function (req, res) {
             try {
-                var rules = {
+                let rules = {
                     token: 'required'
                 };
 
-                var validation = new validator(req.body, rules);
+                let validation = new validator(req.body, rules);
 
                 validation.fails(() => {
                     return res.replyBack({
@@ -164,7 +165,7 @@ var functions = {
 
                 validation.passes(() => {
 
-                    if (req.body.token == "null") {
+                    if (req.body.token === "null") {
                         return res.replyBack({
                             msg: 'please login',
                             http_code: 401
@@ -175,7 +176,7 @@ var functions = {
 
                     try {
 
-                        var user = jwt.verify(token, env.JWT_SECRET);
+                        let user = jwt.verify(token, env.JWT_SECRET);
 
                         if (!user) {
                             return res.replyBack({
@@ -236,11 +237,11 @@ var functions = {
 
             try {
 
-                var rules = {
+                let rules = {
                     token: 'required'
                 };
 
-                var validation = new validator(req.body, rules);
+                let validation = new validator(req.body, rules);
 
                 validation.fails(() => {
                     return res.replyBack({errors: validation.errors.errors, http_code: 400});
@@ -248,7 +249,7 @@ var functions = {
 
                 validation.passes(() => {
 
-                    var token = req.body.token;
+                    let token = req.body.token;
 
                     fn.model('token').deleteOne({
                         token: token
@@ -271,11 +272,11 @@ var functions = {
 
         getProfile: function (req, res) {
             try {
-                var rules = {
+                let rules = {
                     "userId": "required|exists:user,_id"
                 };
 
-                var validation = new validator(req.body, rules);
+                let validation = new validator(req.body, rules);
 
                 validation.fails(() => {
                     return res.replyBack({errors: validation.errors.errors, http_code: 400});
@@ -310,22 +311,22 @@ var functions = {
 
         editProfile: function (req, res) {
             try {
-                var rules = {
+                let rules = {
                     "userId": "required|exists:user,_id"
                 };
 
-                var validation = new validator(req.body, rules);
+                let validation = new validator(req.body, rules);
 
                 validation.fails(() => {
                     return res.replyBack({errors: validation.errors.errors, http_code: 400});
                 });
 
                 validation.passes(() => {
-                    var user_id = req.body.userId;
-                    var username = req.body.username;
-                    var email = req.body.email;
-                    var mobile = req.body.mobile;
-                    var _payload = {}
+                    let user_id = req.body.userId;
+                    let username = req.body.username;
+                    let email = req.body.email;
+                    let mobile = req.body.mobile;
+                    let _payload = {}
                     if (username) {
                         _payload['username'] = username;
                     }

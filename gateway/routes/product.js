@@ -40,7 +40,7 @@ router.post('/listLite', function (req, res) {
             category_id: category_id
         };
 
-        fn.Execute(req, _payload, "inventory.category.listLite", 10000).then((data, err) => {
+        fn.Execute(req, _payload, "inventory.product.listLite", 10000).then((data, err) => {
             data = JSON.parse(data.toString());
             return res.respond(data);
         })
