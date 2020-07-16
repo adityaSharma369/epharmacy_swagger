@@ -24,12 +24,10 @@ var functions = {
                     }]
                 }
             }
-
-            if (typeof req.body.role != "undefined") {
-                filter = {$or: [{role: req.body.role}]}
-            }
             filter["is_active"] = true
-
+            if (typeof req.body.role != "undefined") {
+                filter["role"] = req.body.role
+            }
             fn.paginate("user", filter, "", limit, page, "").then((data) => {
                 data.docs.forEach(element => {
                     element.password = undefined;
@@ -51,7 +49,7 @@ var functions = {
 
         try {
             let filter = {}
-            if (req.body.role !== undefined) {
+            if (typeof req.body.role != "undefined") {
                 filter["role"] = req.body.role
             }
             fn.model('user').find(filter).select('_id username email').then((data) => {
@@ -140,6 +138,7 @@ var functions = {
                 let customer_id = req.body.customer_id;
 
                 fn.model('user').findOne({_id: user_id, customer: customer_id}).then((data) => {
+                    data.password = undefined
                     return res.replyBack({msg: 'user view', data: data, http_code: 200})
                 }).catch((err) => {
                     return res.replyBack({ex: fn.err_format(err), http_code: 500});

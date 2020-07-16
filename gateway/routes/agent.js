@@ -32,8 +32,12 @@ router.post('/list', function (req, res) {
             };
 
             fn.Execute(req, _payload, "user.list", 10000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -51,11 +55,15 @@ router.post('/listLite', function (req, res) {
 
     try {
         let _payload = {
-            role : "agent"
+            role: "agent"
         }
         fn.Execute(req, _payload, "user.listLite", 10000).then((data, err) => {
-            data = JSON.parse(data.toString());
-            return res.respond(data);
+            if (data) {
+                data = JSON.parse(data.toString());
+                return res.respond(data);
+            } else {
+                console.log("%%%%%%% timeout", data, err)
+            }
         })
             .catch(res.err);
     } catch (e) {
@@ -102,8 +110,12 @@ router.post('/add', function (req, res) {
                 role: role,
             };
             fn.Execute(req, _payload, "user.add", 10000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });

@@ -12,8 +12,16 @@ router.post('/list', function (req, res) {
             category_id: category_id
         };
         fn.Execute(req, _payload, "inventory.category.list", 10000).then((data, err) => {
-            data = JSON.parse(data.toString());
-            return res.respond(data);
+            if (data) {
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
+            } else {
+                console.log("%%%%%%% timeout", data, err)
+            }
         })
             .catch(res.err);
 
@@ -39,11 +47,19 @@ router.post('/listLite', function (req, res) {
         };
 
         fn.Execute(req, _payload, "inventory.category.listLite", 10000).then((data, err) => {
-            data = JSON.parse(data.toString());
-            return res.respond(data);
+            if (data) {
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
+            } else {
+                console.log("%%%%%%% timeout", data, err)
+            }
         })
             .catch(res.err);
-     
+
     } catch (e) {
         return res.err({
             error: "something went wrong",
@@ -62,7 +78,7 @@ router.post('/add', function (req, res) {
             title: 'required|min:1|max:100',
             description: 'required',
             type: 'required',
-            parent_id:"objectId"
+            parent_id: "objectId"
         };
         var validation = new validator(req.body, rules);
         validation.fails(() => {
@@ -77,12 +93,16 @@ router.post('/add', function (req, res) {
             var _payload = {
                 title: title,
                 description: description,
-                parent_id:parent_id,
-                type:type
+                parent_id: parent_id,
+                type: type
             };
             fn.Execute(req, _payload, "inventory.category.add", 10000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -117,8 +137,12 @@ router.post('/view', function (req, res) {
             };
 
             fn.Execute(req, _payload, "inventory.category.view", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -159,13 +183,17 @@ router.post('/edit', function (req, res) {
                 is_primary: is_primary,
                 is_active: is_active,
                 priority: priority,
-                parent_id:parent_id,
+                parent_id: parent_id,
 
             };
 
             fn.Execute(req, _payload, "inventory.category.edit", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -203,8 +231,12 @@ router.post('/delete', function (req, res) {
                 category_id: category_id,
             };
             fn.Execute(req, _payload, "inventory.category.delete", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });

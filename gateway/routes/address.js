@@ -28,8 +28,12 @@ router.post('/list', function (req, res) {
             };
 
             fn.Execute(req, _payload, "user.address.list", 10000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -68,8 +72,12 @@ router.post('/listLite', function (req, res) {
             };
 
             fn.Execute(req, _payload, "user.address.listLite", 10000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -91,10 +99,10 @@ router.post('/add', function (req, res) {
             title: 'required|min:1|max:100',
             location: 'required',
             place: 'required',
-            city:'required',
-            state:'required',
-            pin_code:'required',
-            user_id:'required'
+            city: 'required',
+            state: 'required',
+            pin_code: 'required',
+            user_id: 'required'
         };
         let validation = new validator(req.body, rules);
         validation.fails(() => {
@@ -116,11 +124,15 @@ router.post('/add', function (req, res) {
                 place: place,
                 city: city,
                 state: state,
-                pin_code:pin_code
+                pin_code: pin_code
             };
             fn.Execute(req, _payload, "user.address.add", 10000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -155,8 +167,12 @@ router.post('/view', function (req, res) {
             };
 
             fn.Execute(req, _payload, "user.address.view", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -199,13 +215,17 @@ router.post('/edit', function (req, res) {
                 place: place,
                 city: city,
                 state: state,
-                pin_code:pin_code,
+                pin_code: pin_code,
                 is_primary: is_primary
             };
 
             fn.Execute(req, _payload, "user.address.edit", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -243,8 +263,12 @@ router.post('/delete', function (req, res) {
                 address_id: address_id,
             };
             fn.Execute(req, _payload, "user.address.delete", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });

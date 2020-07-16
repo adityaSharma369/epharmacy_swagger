@@ -1,14 +1,14 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 
 
 router.post('/list', function (req, res) {
 
     try {
 
-        var rules = {};
+        let rules = {};
 
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
 
         validation.fails(() => {
             return res.err({
@@ -19,12 +19,12 @@ router.post('/list', function (req, res) {
 
 
         validation.passes(() => {
-            var search = req.body.search;
-            var limit = req.body.limit;
-            var page = req.body.page;
-            var role = req.body.role;
+            let search = req.body.search;
+            let limit = req.body.limit;
+            let page = req.body.page;
+            let role = req.body.role;
 
-            var _payload = {
+            let _payload = {
                 search: search,
                 page: page,
                 limit: limit,
@@ -32,8 +32,12 @@ router.post('/list', function (req, res) {
             };
 
             fn.Execute(req, _payload, "user.list", 10000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -50,8 +54,13 @@ router.post('/list', function (req, res) {
 router.post('/listLite', function (req, res) {
 
     try {
-
-        fn.Execute(req, null, "user.listLite", 10000).then((data, err) => {
+        let role = req.body.role;
+        let search = req.body.search;
+        let _payload = {
+            role: role,
+            search: search
+        };
+        fn.Execute(req, _payload, "user.listLite", 10000).then((data, err) => {
             data = JSON.parse(data.toString());
             return res.respond(data);
         })
@@ -70,7 +79,7 @@ router.post('/add', function (req, res) {
 
     try {
 
-        var rules = {
+        let rules = {
             username: 'required',
             mobile: 'required',
             email: 'required|email',
@@ -78,7 +87,7 @@ router.post('/add', function (req, res) {
             role: 'required',
         };
 
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
 
         validation.fails(() => {
             return res.err({
@@ -88,12 +97,12 @@ router.post('/add', function (req, res) {
         });
 
         validation.passes(() => {
-            var username = req.body.username;
-            var email = req.body.email;
-            var mobile = req.body.mobile;
-            var password = req.body.password;
-            var role = req.body.role;
-            var _payload = {
+            let username = req.body.username;
+            let email = req.body.email;
+            let mobile = req.body.mobile;
+            let password = req.body.password;
+            let role = req.body.role;
+            let _payload = {
                 username: username,
                 email: email,
                 mobile: mobile,
@@ -101,8 +110,12 @@ router.post('/add', function (req, res) {
                 role: role,
             };
             fn.Execute(req, _payload, "user.add", 10000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -118,11 +131,11 @@ router.post('/view', function (req, res) {
 
     try {
 
-        var rules = {
+        let rules = {
             user_id: 'required'
         };
 
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
 
         validation.fails(() => {
             return res.err({
@@ -132,15 +145,19 @@ router.post('/view', function (req, res) {
         });
 
         validation.passes(() => {
-            var user_id = req.body.user_id;
+            let user_id = req.body.user_id;
 
-            var _payload = {
+            let _payload = {
                 user_id: user_id
             };
 
             fn.Execute(req, _payload, "user.view", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -158,11 +175,11 @@ router.post('/edit', function (req, res) {
 
     try {
 
-        var rules = {
+        let rules = {
             user_id: 'required'
         };
 
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
 
         validation.fails(() => {
             return res.err({
@@ -172,23 +189,27 @@ router.post('/edit', function (req, res) {
         });
 
         validation.passes(() => {
-            var user_id = req.body.user_id;
-            var email = req.body.email;
-            var mobile = req.body.mobile;
-            var role = req.body.role;
-            var password = req.body.password;
+            let user_id = req.body.user_id;
+            let email = req.body.email;
+            let mobile = req.body.mobile;
+            let role = req.body.role;
+            let password = req.body.password;
 
-            var _payload = {
+            let _payload = {
                 user_id: user_id,
                 email: email,
                 mobile: mobile,
                 role: role,
-                password:password
+                password: password
             };
 
             fn.Execute(req, _payload, "user.edit", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -206,11 +227,11 @@ router.post('/delete', function (req, res) {
 
     try {
 
-        var rules = {
+        let rules = {
             user_id: 'required'
         };
 
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
 
         validation.fails(() => {
             return res.err({
@@ -220,13 +241,17 @@ router.post('/delete', function (req, res) {
         });
 
         validation.passes(() => {
-            var user_id = req.body.user_id;
-            var _payload = {
+            let user_id = req.body.user_id;
+            let _payload = {
                 user_id: user_id,
             };
             fn.Execute(req, _payload, "user.delete", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });

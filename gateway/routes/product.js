@@ -14,8 +14,16 @@ router.post('/list', function (req, res) {
             category_id: category_id
         };
         fn.Execute(req, _payload, "inventory.product.list", 10000).then((data, err) => {
-            data = JSON.parse(data.toString());
-            return res.respond(data);
+            if (data) {
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
+            } else {
+                console.log("%%%%%%% timeout", data, err)
+            }
         })
             .catch(res.err);
 
@@ -41,8 +49,16 @@ router.post('/listLite', function (req, res) {
         };
 
         fn.Execute(req, _payload, "inventory.product.listLite", 10000).then((data, err) => {
-            data = JSON.parse(data.toString());
-            return res.respond(data);
+            if (data) {
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
+            } else {
+                console.log("%%%%%%% timeout", data, err)
+            }
         })
             .catch(res.err);
 
@@ -88,8 +104,12 @@ router.post('/add', function (req, res) {
                 categories: categories
             }
             fn.Execute(req, _payload, "inventory.product.add", 10000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -124,8 +144,12 @@ router.post('/view', function (req, res) {
             };
 
             fn.Execute(req, _payload, "inventory.product.view", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -170,8 +194,12 @@ router.post('/edit', function (req, res) {
                 categories: categories
             }
             fn.Execute(req, _payload, "inventory.product.edit", 10000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -208,8 +236,12 @@ router.post('/delete', function (req, res) {
                 product_id: product_id,
             };
             fn.Execute(req, _payload, "inventory.product.delete", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -256,8 +288,12 @@ router.post('/uploadImage', upload.single("image"), function (req, res) {
                 image: image
             };
             fn.Execute(req, _payload, "inventory.product.uploadImage", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             }).catch(res.err);
         });
     } catch (e) {
@@ -297,8 +333,12 @@ router.post('/linkCategory', function (req, res) {
                 product_id: product_id
             };
             fn.Execute(req, _payload, "inventory.product.linkCategory", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });
@@ -339,8 +379,12 @@ router.post('/unlinkCategory', function (req, res) {
                 product_id: product_id
             };
             fn.Execute(req, _payload, "inventory.product.unlinkCategory", 1000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
             })
                 .catch(res.err);
         });

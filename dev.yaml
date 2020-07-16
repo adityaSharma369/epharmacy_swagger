@@ -6,33 +6,36 @@ services:
   gateway:
     container_name: gateway
     build: ./gateway
-    network_mode: host
+#    network_mode: host
     command: nodemon server.js
     environment:
-      - RABBIT_MQ_HOST=localhost:5673
+      - RABBIT_MQ_HOST=epharmacy_rabbitmq
       - RABBIT_MQ_USER=root
       - RABBIT_MQ_PASSWORD=epharmacy
+      - RABBIT_MQ_PATTERN=gateway.*
       - CURRENT_DOMAIN=http://52.221.46.156:4500/static
       - MONGO_DB_DBNAME=epharmacy
+      - MONGO_BD_HOST=epharmacy_mongodb
     volumes:
       - ./gateway:/node/epharmacy/app
       - ./common:/node/epharmacy/common
     ports:
-      - "4500:3500"
+      - "4500:4500"
     restart: always
 
   user:
     container_name: user
     build: ./user
     command: nodemon server.js
-    network_mode: host
+#    network_mode: host
     environment:
-      - RABBIT_MQ_HOST=localhost:5673
+      - RABBIT_MQ_HOST=epharmacy_rabbitmq
       - RABBIT_MQ_USER=root
       - RABBIT_MQ_PASSWORD=epharmacy
       - RABBIT_MQ_PATTERN=user.*
       - CURRENT_DOMAIN=http://52.221.46.156:4500/static
       - MONGO_DB_DBNAME=epharmacy
+      - MONGO_BD_HOST=epharmacy_mongodb
 
     volumes:
       - ./user:/node/epharmacy/app
@@ -44,14 +47,15 @@ services:
     container_name: inventory
     build: ./inventory
     command: nodemon server.js
-    network_mode: host
+#    network_mode: host
     environment:
-      - RABBIT_MQ_HOST=localhost:5673
+      - RABBIT_MQ_HOST=epharmacy_rabbitmq
       - RABBIT_MQ_USER=root
       - RABBIT_MQ_PASSWORD=epharmacy
       - RABBIT_MQ_PATTERN=inventory.*
       - CURRENT_DOMAIN=http://52.221.46.156:4500/static
       - MONGO_DB_DBNAME=epharmacy
+      - MONGO_BD_HOST=epharmacy_mongodb
 
     volumes:
       - ./inventory:/node/epharmacy/app
@@ -62,14 +66,15 @@ services:
     container_name: ecommerce
     build: ./ecommerce
     command: nodemon server.js
-    network_mode: host
+#    network_mode: host
     environment:
-      - RABBIT_MQ_HOST=localhost:5673
+      - RABBIT_MQ_HOST=epharmacy_rabbitmq
       - RABBIT_MQ_USER=root
       - RABBIT_MQ_PASSWORD=epharmacy
       - RABBIT_MQ_PATTERN=ecommerce.*
       - CURRENT_DOMAIN=http://52.221.46.156:4500/static
       - MONGO_DB_DBNAME=epharmacy
+      - MONGO_BD_HOST=epharmacy_mongodb
 
     volumes:
       - ./ecommerce:/node/epharmacy/app

@@ -20,8 +20,12 @@ router.post('/login', function (req, res) {
         "password": req.body.password
     }
     fn.Execute(req, payload, 'user.account.login', 10000).then((data, err) => {
-        data = JSON.parse(data);
-        return res.respond(data);
+        if (data) {
+            data = JSON.parse(data.toString());
+            return res.respond(data);
+        } else {
+            console.log("%%%%%%% timeout", data, err)
+        }
     }).catch(res.err);
 });
 
@@ -43,8 +47,12 @@ router.post('/register', function (req, res) {
         "password": req.body.password
     }
     fn.Execute(req, payload, 'user.account.register', 10000).then((data, err) => {
-        data = JSON.parse(data);
-        return res.respond(data);
+        if (data) {
+            data = JSON.parse(data.toString());
+            return res.respond(data);
+        } else {
+            console.log("%%%%%%% timeout", data, err)
+        }
     }).catch(res.err);
 });
 
@@ -54,8 +62,12 @@ router.get('/checkLogin', function (req, res) {
         return res.respond({"http_code": 400, "error": "Token invalid"});
     }
     fn.Execute(req, payload = {token: token.split(" ")[1]}, 'user.account.checkLogin', 10000).then((data, err) => {
-        data = JSON.parse(data);
-        return res.respond(data);
+        if (data) {
+            data = JSON.parse(data.toString());
+            return res.respond(data);
+        } else {
+            console.log("%%%%%%% timeout", data, err)
+        }
     }).catch(res.err);
 });
 
@@ -65,8 +77,12 @@ router.get('/logout', function (req, res) {
         return res.respond({"http_code": 400, "error": "Token invalid"});
     }
     fn.Execute(req, payload = {token: token.split(" ")[1]}, 'user.account.logout', 10000).then((data, err) => {
-        data = JSON.parse(data);
-        return res.respond(data);
+        if (data) {
+            data = JSON.parse(data.toString());
+            return res.respond(data);
+        } else {
+            console.log("%%%%%%% timeout", data, err)
+        }
     }).catch(res.err);
 });
 
@@ -74,8 +90,12 @@ router.get('/logout', function (req, res) {
 router.get('/getProfile', function (req, res) {
     userId = _currentUser._id;
     fn.Execute(req, payload = {userId: userId}, 'user.account.getProfile', 10000).then((data, err) => {
-        data = JSON.parse(data);
-        return res.respond(data);
+        if (data) {
+            data = JSON.parse(data.toString());
+            return res.respond(data);
+        } else {
+            console.log("%%%%%%% timeout", data, err)
+        }
     }).catch(res.err);
 });
 
@@ -88,13 +108,17 @@ router.post('/editProfile', function (req, res) {
         mobile: req.body.mobile,
     }
     fn.Execute(req, payload, 'user.account.editProfile', 10000).then((data, err) => {
-        data = JSON.parse(data);
-        return res.respond(data);
+        if (data) {
+            data = JSON.parse(data.toString());
+            return res.respond(data);
+        } else {
+            console.log("%%%%%%% timeout", data, err)
+        }
     }).catch(res.err);
 });
 
 router.get('/addAddress', function (req, res) {
-     try {
+    try {
 
         var rules = {
             title: 'required|min:1|max:100',
@@ -136,20 +160,20 @@ router.get('/addAddress', function (req, res) {
 });
 
 router.post('/getAddress', function (req, res) {
-     try {
-            var user_id = _currentUser._id;
-            var search = req.body.search();
+    try {
+        var user_id = _currentUser._id;
+        var search = req.body.search();
 
-            var _payload = {
-                user_id: user_id,
-                search:search
-            };
+        var _payload = {
+            user_id: user_id,
+            search: search
+        };
 
-            fn.Execute(req, _payload, "user.address.list", 10000).then((data, err) => {
-                data = JSON.parse(data.toString());
-                return res.respond(data);
-            })
-                .catch(res.err);
+        fn.Execute(req, _payload, "user.address.list", 10000).then((data, err) => {
+            data = JSON.parse(data.toString());
+            return res.respond(data);
+        })
+            .catch(res.err);
     } catch (e) {
         return res.err({
             error: "something went wrong",

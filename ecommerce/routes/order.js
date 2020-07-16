@@ -8,7 +8,7 @@ let functions = {
             let filter = {};
             if (typeof req.body.search != "undefined") {
                 filter = {
-                    $or: [{title: {$regex: req.body.search, $options: 'si'}}]
+                    $or: [{total_amount: {$regex: req.body.search, $options: 'si'}}]
                 }
             }
             if (typeof req.body.user_id != "undefined") {
@@ -16,9 +16,30 @@ let functions = {
                     "user_id": req.body.user_id,
                 }
             }
+            if (typeof req.body.order_status != "undefined") {
+                filter = {
+                    "order_status": req.body.order_status,
+                }
+            }
+            if (typeof req.body.payment_status != "undefined") {
+                filter = {
+                    "payment_status": req.body.payment_status,
+                }
+            }
+            if (typeof req.body.payment_type != "undefined") {
+                filter = {
+                    "payment_type": req.body.payment_type,
+                }
+            }
+            if (typeof req.body.agent_id != "undefined") {
+                filter = {
+                    "agent_id": req.body.agent_id,
+                }
+            }
+
             fn.paginate("order", filter, "", limit, page, {"_created": -1}).then(async (data) => {
                 for (i = 0; i < data.docs.length; i++) {
-                    data.docs[i]['_doc']['items_count'] = await fn.model("order_item").find({
+                    data.docs[i]['_doc']['items_count'] = await fn.model("order_product").find({
                         "order_id": data.docs[i]._id,
                     }).count();
                     data.docs[i] = {...data.docs[i]['_doc']};
@@ -40,7 +61,7 @@ let functions = {
             let rules = {
                 customer_id: 'required|objectId|exists:user,_id',
                 address_id: 'required|objectId|exists:address,_id',
-                items: 'required|array',
+                products: 'required|array',
                 payment_type: 'required',
                 payment_status: 'required',
             };
@@ -55,7 +76,7 @@ let functions = {
                 let seller_id = req.body.seller_id;
                 let payment_type = req.body.payment_type;
                 let payment_status = req.body.payment_status;
-                let items = req.body.items;
+                let products = req.body.products;
                 let address = {}
                 await fn.model('address').findOne({"_id": address_id}).select('place state city location pin_code').then((data) => {
                     address = data
@@ -84,16 +105,16 @@ let functions = {
                 order.save()
                     .then(async (data) => {
                         let totalPrice = 0
-                        await items.forEach((item) => {
-                            fn.model("product").findOne({"_id": item.item_id}).then(async (itemDetails) => {
+                        await products.forEach((item) => {
+                            fn.model("product").findOne({"_id": item.product_id}).then(async (itemDetails) => {
                                 fn.model("product_image").findOne({
                                     "product_id": itemDetails._id,
                                     "is_primary": true
                                 }).then(async (image) => {
                                     let tempData = {
                                         order_id: data._id,
-                                        item_id: item.item_id,
-                                        item_title: itemDetails.title,
+                                        product_id: item.product_id,
+                                        product_title: itemDetails.title,
                                         manufacturer: itemDetails.manufacturer,
                                         price: itemDetails.price,
                                         description: itemDetails.description,
@@ -102,7 +123,7 @@ let functions = {
                                         final_price: itemDetails.price
                                     }
                                     totalPrice += itemDetails.price * item.qty
-                                    await fn.model("order_item")(tempData).save().then().catch((err) => {
+                                    await fn.model("order_product")(tempData).save().then().catch((err) => {
                                         return res.replyBack({ex: fn.err_format(err), http_code: 500});
                                     });
                                 })
@@ -179,7 +200,9 @@ let functions = {
                             .catch((err) => {
                                 return res.replyBack({ex: fn.err_format(err), http_code: 500});
                             });
-                    });
+                    }).catch((err) => {
+                    return res.replyBack({ex: fn.err_format(err), http_code: 500});
+                });
             });
 
         } catch (e) {
@@ -206,15 +229,26 @@ let functions = {
                         _id: order_id
                     })
                     .then(async (order) => {
-                        order['_doc']["items"] = await fn.model("order_item").find({"order_id": order_id});
-                        for (i = 0; i < order['_doc']["items"].length; i++) {
-                            if (order['_doc']["items"][i]["image"] !== undefined && order['_doc']["items"][i]["image"] !== null) {
-                                order['_doc']["items"][i]["image"] = CURRENT_DOMAIN + "/product_images/" + order['_doc']["items"][i].item_id + "/" + order['_doc']["items"][i]["image"]
+                        order['_doc']["products"] = await fn.model("order_product").find({"order_id": order_id});
+                        for (i = 0; i < order['_doc']["products"].length; i++) {
+                            if (order['_doc']["products"][i]["image"] !== undefined && order['_doc']["products"][i]["image"] !== null) {
+                                order['_doc']["products"][i]["image"] = CURRENT_DOMAIN + "/product_images/" + order['_doc']["products"][i].item_id + "/" + order['_doc']["products"][i]["image"]
+                            }
+                            if (order.agent_id !== undefined) {
+                                await fn.model("user").findOne({"_id": order.agent_id}).then((agent) => {
+                                    agent.password = undefined
+                                    order["_doc"]["agent_details"] = agent
+                                    order["agent_details"] = order["_doc"]["agent_details"]
+                                }).catch((err) => {
+                                    return res.replyBack({ex: fn.err_format(err), http_code: 500});
+                                });
                             }
                         }
                         return res.replyBack({msg: 'order', data: order, http_code: 200});
 
-                    });
+                    }).catch((err) => {
+                    return res.replyBack({ex: fn.err_format(err), http_code: 500});
+                });
             });
 
         } catch (e) {
@@ -236,13 +270,15 @@ let functions = {
             });
             validation.passes(async () => {
                 let order_id = req.body.order_id;
-                fn.model("order_item").find({"order_id": order_id}).then((order) => {
+                fn.model("order_product").find({"order_id": order_id}).then((order) => {
                     for (i = 0; i < order.length; i++) {
                         if (order[i]["image"] !== undefined && order[i]["image"] !== null) {
                             order[i]["image"] = CURRENT_DOMAIN + "/product_images/" + order[i].item_id + "/" + order[i]["image"]
                         }
                     }
                     return res.replyBack({msg: 'order_items', data: order, http_code: 200});
+                }).catch((err) => {
+                    return res.replyBack({ex: fn.err_format(err), http_code: 500});
                 });
             });
 

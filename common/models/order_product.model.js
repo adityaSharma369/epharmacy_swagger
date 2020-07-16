@@ -6,11 +6,11 @@ let OrderItemSchems = new Schema({
         type: Schema.Types.ObjectId,
         required: true
     },
-    item_id: {
+    product_id: {
         type: Schema.Types.ObjectId,
         required: false
     },
-    item_title: {
+    product_title: {
         type: String,
         required: false
     },

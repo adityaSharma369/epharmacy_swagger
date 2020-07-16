@@ -123,7 +123,6 @@ function startWorker() {
                         service = bits[0];
                         action = bits[1];
                     }
-
                     let req = {
                         body: body,
                         clean: function (obj) {
@@ -140,7 +139,7 @@ function startWorker() {
                             });
                         }
                     };
-                    service = require(appPath + '/routes/' + service + '.js');
+                    service = require(app_path + '/routes/' + service + '.js');
                     if (service[action]) {
                         // console.log("body",req.body)
                         service[action](req, res);
