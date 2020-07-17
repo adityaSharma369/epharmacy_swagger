@@ -31,32 +31,32 @@ jobs:
 #         if [ -f Gopkg.toml ]; then
 #             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 #             dep ensure
-#         fi
-    - name: removing lock
-      run: sudo rm -f ./.git/index.lock
+# #         fi
+#     - name: removing lock
+#       run: sudo rm -f ./.git/index.lock
 #     - name: run test cases
 #       run: go test ...
-    - name: Bump version and push tag
-      uses: TriPSs/conventional-changelog-action@v3
-      with:
-        github-token: ${{ secrets.ACCESS_TOKEN }}
-        git-message: 'chore(release): {version}'
-        preset: 'angular'
-        tag-prefix: 'v'
-        output-file: 'CHANGELOG.md'
-        changelog-release-count: 0
-    - name: pushing to dockerhub
-      run: sh push_to_dockerhub.sh
-#     - name: run test cases
-#       run: go test ...
-    - name: Deploy to Server
-      uses: easingthemes/ssh-deploy@v2.1.4
-      env:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          SOURCE: "package.json"
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: ${{ secrets.REMOTE_TARGET }}
+#     - name: Bump version and push tag
+#       uses: TriPSs/conventional-changelog-action@v3
+#       with:
+#         github-token: ${{ secrets.ACCESS_TOKEN }}
+#         git-message: 'chore(release): {version}'
+#         preset: 'angular'
+#         tag-prefix: 'v'
+#         output-file: 'CHANGELOG.md'
+#         changelog-release-count: 0
+#     - name: pushing to dockerhub
+#       run: sh push_to_dockerhub.sh
+# #     - name: run test cases
+# #       run: go test ...
+#     - name: Deploy to Server
+#       uses: easingthemes/ssh-deploy@v2.1.4
+#       env:
+#           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+#           SOURCE: "package.json"
+#           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+#           REMOTE_USER: ${{ secrets.REMOTE_USER }}
+#           TARGET: ${{ secrets.REMOTE_TARGET }}
     - name: Execute SSH commmands on remote server
       uses: JimCronqvist/action-ssh@0.1.1
       with:
