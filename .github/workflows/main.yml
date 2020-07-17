@@ -65,7 +65,7 @@ jobs:
         debug: false
         command: |
           cd epharmacy_backend
-          sh docker_version_change.sh
+          sudo sh docker_version_change.sh
     - name: Slack Notification
       uses: rtCamp/action-slack-notify@v2.0.0
       env:
