@@ -37,7 +37,7 @@ jobs:
 #     - name: run test cases
 #       run: go test ...
     - name: Bump version and push tag
-      uses: TriPSs/conventional-changelog-action@v2.0.1
+      uses: TriPSs/conventional-changelog-action@v3
       with:
         github-token: ${{ secrets.ACCESS_TOKEN }}
         git-message: 'chore(release): {version}'
@@ -65,7 +65,7 @@ jobs:
         debug: false
         command: |
           cd epharmacy_backend
-          ls
+          sh docker_version_change.sh
     - name: Slack Notification
       uses: rtCamp/action-slack-notify@v2.0.0
       env:
