@@ -258,4 +258,70 @@ router.post('/getAdminPendingOrders', function (req, res) {
     }
 });
 
+router.post('/confirmOrder', function (req, res) {
+
+    try {
+        let rules = {
+            order_id: 'objectId'
+        };
+        let validation = new validator(req.body, rules);
+        validation.fails(() => {
+            return res.respond({errors: validation.errors.errors, http_code: 400})
+        });
+        validation.passes(() => {
+            let order_id = req.body.order_id;
+            let _payload = {
+                order_id: order_id
+            };
+            fn.Execute(req, _payload, "ecommerce.order.confirmOrder", 10000).then((data, err) => {
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
+            }).catch(res.err);
+        });
+
+    } catch (e) {
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+});
+
+router.post('/rejectOrder', function (req, res) {
+
+    try {
+        let rules = {
+            order_id: 'objectId'
+        };
+        let validation = new validator(req.body, rules);
+        validation.fails(() => {
+            return res.respond({errors: validation.errors.errors, http_code: 400})
+        });
+        validation.passes(() => {
+            let order_id = req.body.order_id;
+            let _payload = {
+                order_id: order_id
+            };
+            fn.Execute(req, _payload, "ecommerce.order.rejectOrder", 10000).then((data, err) => {
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
+            }).catch(res.err);
+        });
+
+    } catch (e) {
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+});
+
 module.exports = router;

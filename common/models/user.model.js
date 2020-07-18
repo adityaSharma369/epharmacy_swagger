@@ -17,7 +17,7 @@ let UserSchema = Schema({
         role: {
             type: String
         },
-        isActive: {
+        is_active: {
             type: Boolean
         },
         profilePic: {
@@ -33,6 +33,9 @@ let UserSchema = Schema({
             type: Boolean
         },
         isEmailVerified: {
+            type: Boolean
+        },
+        is_deleted: {
             type: Boolean
         },
     },

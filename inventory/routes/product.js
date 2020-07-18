@@ -1,4 +1,4 @@
-var functions = {
+let functions = {
     list: async (req, res) => {
 
         try {
@@ -27,7 +27,7 @@ var functions = {
                 })
                 filter["_id"] = {"$in": productsArray}
             }
-            filter["is_active"] = true
+            filter["is_deleted"] = false
             fn.paginate("product", filter, "", limit, page, {"_created": -1}).then(async (data) => {
                 for (i = 0; i < data.docs.length; i++) {
                     data.docs[i]['_doc']['image'] = await fn.model("product_image").findOne({
@@ -63,7 +63,7 @@ var functions = {
 
     listLite: (req, res) => {
         try {
-            var filter = {"is_active": true}
+            let filter = {"is_deleted": false}
             if (typeof req.body.search != "undefined") {
                 filter = {
                     $or: [{title: {$regex: req.body.search, $options: 'si'}}, {
@@ -116,6 +116,7 @@ var functions = {
                     manufacturer: manufacturer,
                     is_visible: true,
                     is_active: true,
+                    is_deleted: false,
                 }
                 const product = new fn.model('product')(productData);
                 product.save()
@@ -131,7 +132,7 @@ var functions = {
                             }
                         );
                         fn.model("product_category").insertMany(categoryArray).then(() => {
-                                return res.replyBack({msg: 'product added', data: data, http_code: 200});
+                                return res.replyBack({msg: 'product added', data: data, http_code: 201});
                             }
                         ).catch((err) => {
                             return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -153,7 +154,7 @@ var functions = {
                 product_id: 'required|exists:product,_id',
                 categories: 'array'
             };
-            var validation = new validator(req.body, rules);
+            let validation = new validator(req.body, rules);
             validation.fails(() => {
                 return res.replyBack({errors: validation.errors.errors, http_code: 400});
             });
@@ -161,38 +162,37 @@ var functions = {
 
                 let product_id = req.body.product_id;
                 const categories = req.body.categories;
-
-                var _payload = {}
-
-                if (typeof req.body.title != "undefined") {
-                    _payload["title"] = req.body.title
-                }
-
-                if (typeof req.body.description != "undefined") {
-                    _payload["description"] = req.body.description
-                }
-
-                if (typeof req.body.is_active != "undefined") {
-                    _payload["is_active"] = req.body.is_active
-                }
-
-                if (typeof req.body.price != "undefined") {
-                    _payload["price"] = req.body.price
-                }
-
-                if (typeof req.body.manufacturer != "undefined") {
-                    _payload["manufacturer"] = req.body.manufacturer
-                }
-
-                if (typeof req.body.is_visible != "undefined") {
-                    _payload["is_visible"] = req.body.is_visible
-                }
-
                 fn.model('product')
                     .findOne({
                         _id: product_id
                     })
                     .then((product) => {
+                        let _payload = product
+
+                        if (typeof req.body.title != "undefined") {
+                            _payload["title"] = req.body.title
+                        }
+
+                        if (typeof req.body.description != "undefined") {
+                            _payload["description"] = req.body.description
+                        }
+
+                        if (typeof req.body.is_active != "undefined") {
+                            _payload["is_active"] = req.body.is_active
+                        }
+
+                        if (typeof req.body.price != "undefined") {
+                            _payload["price"] = req.body.price
+                        }
+
+                        if (typeof req.body.manufacturer != "undefined") {
+                            _payload["manufacturer"] = req.body.manufacturer
+                        }
+
+                        if (typeof req.body.is_visible != "undefined") {
+                            _payload["is_visible"] = req.body.is_visible
+                        }
+
                         product.updateOne(_payload)
                             .then((data) => {
                                 const categoryArray = []
@@ -218,7 +218,51 @@ var functions = {
 
                                     }
                                 }
-                                return res.replyBack({msg: 'product edited', data: _payload, http_code: 200});
+                                return res.replyBack({msg: 'product edited', data: _payload, http_code: 201});
+                            })
+                            .catch((err) => {
+                                return res.replyBack({ex: fn.err_format(err), http_code: 500});
+                            });
+                    });
+            });
+
+        } catch (e) {
+            return res.replyBack({
+                error: 'something went wrong', http_code: 500
+            });
+        }
+    },
+
+
+    toggleStatus: (req, res) => {
+        try {
+            const rules = {
+                product_id: 'required|exists:product,_id',
+            };
+            let validation = new validator(req.body, rules);
+            validation.fails(() => {
+                return res.replyBack({errors: validation.errors.errors, http_code: 400});
+            });
+            validation.passes(async () => {
+
+                let product_id = req.body.product_id;
+                fn.model('product')
+                    .findOne({
+                        _id: product_id
+                    })
+                    .then((product) => {
+                        let _payload = product
+                        let msg = ""
+                        if (_payload.is_active === true) {
+                            _payload["is_active"] = false
+                            msg = "product is not active"
+                        } else {
+                            _payload["is_active"] = true
+                            msg = "product is active"
+                        }
+                        product.updateOne(_payload)
+                            .then((data) => {
+                                return res.replyBack({msg: msg, data: _payload, http_code: 201});
                             })
                             .catch((err) => {
                                 return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -249,6 +293,9 @@ var functions = {
             validation.passes(async () => {
                 let product_id = req.body.product_id;
                 fn.model('product').findOne({_id: product_id}).then(async (data) => {
+                    if (data.is_deleted === true) {
+                        return res.replyBack({error: "product was deleted or not found", http_code: 500});
+                    }
                     data['_doc']["image"] = await fn.model("product_image").find({"product_id": product_id});
                     for (let i = 0; i < data["_doc"]["image"].length; i++) {
                         data["_doc"]["image"][i]["image"] = CURRENT_DOMAIN + "/product_images/" + product_id + "/" + data["_doc"]["image"][i]["image"]
@@ -285,17 +332,17 @@ var functions = {
 
     delete: (req, res) => {
         try {
-            var rules = {
+            let rules = {
                 product_id: 'required|exists:product,_id'
             };
-            var validation = new validator(req.body, rules);
+            let validation = new validator(req.body, rules);
             validation.fails(() => {
                 return res.replyBack({errors: validation.errors.errors, http_code: 400});
             });
             validation.passes(async () => {
                 let product_id = req.body.product_id;
-                var _payload = {
-                    "is_active": false
+                let _payload = {
+                    "is_deleted": true
                 }
                 fn.model('product')
                     .findOne({
@@ -304,7 +351,7 @@ var functions = {
                     .then((category) => {
                         category.updateOne(_payload)
                             .then((data) => {
-                                return res.replyBack({msg: 'product deleted', http_code: 200});
+                                return res.replyBack({msg: 'product deleted', http_code: 201});
                             })
                             .catch((err) => {
                                 return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -320,12 +367,12 @@ var functions = {
     },
 
     linkCategory: (req, res) => {
-        var rules = {
+        let rules = {
             product_id: "required|exists:product,_id",
             category_id: 'required|exists:category,_id'
         };
 
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
 
         validation.fails(() => {
             return res.err({
@@ -335,15 +382,15 @@ var functions = {
         });
 
         validation.passes(() => {
-            var category_id = req.body.category_id;
-            var product_id = req.body.product_id;
+            let category_id = req.body.category_id;
+            let product_id = req.body.product_id;
             const linkData = {
                 product_id: product_id,
                 category_id: category_id,
                 is_active: true
             }
             fn.model("product_category")(linkData).save().then(() => {
-                    return res.replyBack({msg: 'product linked', data: linkData, http_code: 200});
+                    return res.replyBack({msg: 'product linked', data: linkData, http_code: 201});
                 }
             ).catch((err) => {
                 return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -352,12 +399,12 @@ var functions = {
     },
 
     unlinkCategory: (req, res) => {
-        var rules = {
+        let rules = {
             product_id: "required|exists:product,_id",
             category_id: 'required|exists:category,_id'
         };
 
-        var validation = new validator(req.body, rules);
+        let validation = new validator(req.body, rules);
 
         validation.fails(() => {
             return res.err({
@@ -367,10 +414,10 @@ var functions = {
         });
 
         validation.passes(() => {
-            var category_id = req.body.category_id;
-            var product_id = req.body.product_id;
+            let category_id = req.body.category_id;
+            let product_id = req.body.product_id;
             fn.model("product_category").deleteMany({"product_id": product_id, "category_id": category_id}).then(() => {
-                    return res.replyBack({msg: 'product unlinked', data: linkData, http_code: 200});
+                    return res.replyBack({msg: 'product unlinked', data: linkData, http_code: 201});
                 }
             ).catch((err) => {
                 return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -380,11 +427,11 @@ var functions = {
 
     uploadImage: (req, res) => {
         try {
-            var rules = {
+            let rules = {
                 product_id: 'required|exists:product,_id',
                 image: 'required'
             };
-            var validation = new validator(req.body, rules);
+            let validation = new validator(req.body, rules);
             validation.fails(() => {
                 return res.replyBack({errors: validation.errors.errors, http_code: 400});
             });
@@ -400,7 +447,7 @@ var functions = {
                 }
                 fn.model('product_image')(product_image).save()
                     .then(() => {
-                        return res.replyBack({msg: 'product  image uploaded', data: product_image, http_code: 200});
+                        return res.replyBack({msg: 'product  image uploaded', data: product_image, http_code: 201});
 
                     })
                     .catch((err) => {

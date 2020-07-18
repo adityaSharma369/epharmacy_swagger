@@ -29,6 +29,35 @@ router.post('/login', function (req, res) {
     }).catch(res.err);
 });
 
+
+router.post('/testlogin', function (req, res) {
+    var rules = {
+        username: 'array:string',
+    };
+
+    var validation = new validator(req.body, rules);
+
+    validation.fails(() => {
+        return res.respond({
+            http_code: 500,
+            errors: validation.errors.errors,
+        });
+    });
+    var payload = {
+        "username": req.body.username,
+    }
+    fn.Execute(req, payload, 'user.ng', 10000).then((data, err) => {
+        if (data) {
+            data = JSON.parse(data.toString());
+            return res.respond(data);
+        } else {
+            console.log("%%%%%%% timeout", data, err)
+        }
+    }).catch(res.err);
+});
+
+
+
 router.post('/register', function (req, res) {
     var rules = {
         email: 'required|email',

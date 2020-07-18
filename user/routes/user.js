@@ -24,9 +24,14 @@ var functions = {
                     }]
                 }
             }
-            filter["is_active"] = true
+            filter["is_deleted"] = false
             if (typeof req.body.role != "undefined") {
                 filter["role"] = req.body.role
+                if (req.body.role !== "agent") {
+                    filter["role"] = {
+                        "$ne": "agent"
+                    }
+                }
             }
             fn.paginate("user", filter, "", limit, page, "").then((data) => {
                 data.docs.forEach(element => {
@@ -52,6 +57,7 @@ var functions = {
             if (typeof req.body.role != "undefined") {
                 filter["role"] = req.body.role
             }
+            filter["is_deleted"] = false
             fn.model('user').find(filter).select('_id username email').then((data) => {
                 return res.replyBack({msg: 'user list', data: data, http_code: 200})
             })
@@ -99,11 +105,12 @@ var functions = {
                         password: hash,
                         role: role,
                         is_active: true,
+                        is_deleted: false,
                     });
                 user.save()
                     .then((data) => {
                         data.password = undefined;
-                        return res.replyBack({msg: 'user added', data: data, http_code: 200})
+                        return res.replyBack({msg: 'user added', data: data, http_code: 201})
                     })
                     .catch((err) => {
                         return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -190,11 +197,38 @@ var functions = {
                     .then((driver) => {
                         driver.updateOne(_payload)
                             .then((data) => {
-                                return res.replyBack({msg: 'user edited', http_code: 200});
+                                return res.replyBack({msg: 'user edited', http_code: 201});
                             })
                             .catch((err) => {
                                 return res.replyBack({ex: fn.err_format(err), http_code: 500});
                             });
+                    });
+            });
+
+        } catch (e) {
+            console.log("error", e)
+            return res.replyBack({
+                error: 'something went wrong', http_code: 500
+            });
+        }
+    },
+
+    editAll: (req, res) => {
+        try {
+            var rules = {
+                user_id: 'required|exists:user,_id'
+            };
+            var validation = new validator(req.body, rules);
+            validation.fails(() => {
+                return res.replyBack({errors: validation.errors.errors, http_code: 400});
+            });
+            validation.passes(async () => {
+                fn.model('user')
+                    .updateMany({}, {"is_deleted": false})
+                    .then((driver) => {
+
+                        return res.replyBack({msg: 'user edited', http_code: 200});
+
                     });
             });
 
@@ -218,16 +252,16 @@ var functions = {
             validation.passes(async () => {
                 let user_id = req.body.user_id;
                 var _payload = {
-                    "is_active": false
+                    "is_deleted": true
                 }
                 fn.model('user')
                     .findOne({
                         _id: user_id
                     })
-                    .then((driver) => {
-                        driver.updateOne(_payload)
+                    .then((user) => {
+                        user.updateOne(_payload)
                             .then((data) => {
-                                return res.replyBack({msg: 'user deleted', http_code: 200});
+                                return res.replyBack({msg: 'user deleted', http_code: 201});
                             })
                             .catch((err) => {
                                 return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -237,6 +271,51 @@ var functions = {
 
         } catch (e) {
             console.log("error", e)
+            return res.replyBack({
+                error: 'something went wrong', http_code: 500
+            });
+        }
+    },
+
+    toggleStatus: (req, res) => {
+        try {
+            const rules = {
+                user_id: 'required|exists:user,_id',
+            };
+            let validation = new validator(req.body, rules);
+            validation.fails(() => {
+                return res.replyBack({errors: validation.errors.errors, http_code: 400});
+            });
+            validation.passes(async () => {
+                let user_id = req.body.user_id;
+                fn.model('user')
+                    .findOne({
+                        _id: user_id
+                    })
+                    .then((user) => {
+                        let _payload = user
+                        let msg = ""
+                        console.log(user.is_active, "============================")
+                        if (user["is_active"] === true) {
+                            console.log(user["is_active"], "=--------------")
+                            _payload["is_active"] = false
+                            msg = "user is not active"
+                        } else {
+                            console.log(user["is_active"])
+                            _payload["is_active"] = true
+                            msg = "user is active"
+                        }
+                        user.updateOne(_payload)
+                            .then((data) => {
+                                return res.replyBack({msg: msg, data: data, http_code: 201});
+                            })
+                            .catch((err) => {
+                                return res.replyBack({ex: fn.err_format(err), http_code: 500});
+                            });
+                    });
+            });
+
+        } catch (e) {
             return res.replyBack({
                 error: 'something went wrong', http_code: 500
             });

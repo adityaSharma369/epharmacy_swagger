@@ -41,6 +41,10 @@ let OrderItemSchems = new Schema({
     final_price:{
         type: Number,
         required:true
+    },
+    is_available:{
+        type: Boolean,
+        required:false
     }
 }, {
     strict: false,

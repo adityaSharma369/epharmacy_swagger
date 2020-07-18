@@ -194,13 +194,15 @@ router.post('/edit', function (req, res) {
             let mobile = req.body.mobile;
             let role = req.body.role;
             let password = req.body.password;
+            let username = req.body.username;
 
             let _payload = {
                 user_id: user_id,
                 email: email,
                 mobile: mobile,
                 role: role,
-                password: password
+                password: password,
+                username:username
             };
 
             fn.Execute(req, _payload, "user.edit", 1000).then((data, err) => {
@@ -265,5 +267,46 @@ router.post('/delete', function (req, res) {
 
 });
 
+router.post('/toggleStatus', function (req, res) {
+
+    try {
+
+        let rules = {
+            user_id: 'required'
+        };
+
+        let validation = new validator(req.body, rules);
+
+        validation.fails(() => {
+            return res.err({
+                errors: validation.errors.errors,
+                http_code: 400
+            });
+        });
+
+        validation.passes(() => {
+            let user_id = req.body.user_id;
+            let _payload = {
+                user_id: user_id,
+            };
+            fn.Execute(req, _payload, "user.toggleStatus", 1000).then((data, err) => {
+                if (data) {
+                    data = JSON.parse(data.toString());
+                    return res.respond(data);
+                } else {
+                    console.log("%%%%%%% timeout", data, err)
+                }
+            })
+                .catch(res.err);
+        });
+    } catch (e) {
+        return res.err({
+            error: "something went wrong",
+            http_code: 500
+        });
+    }
+
+
+});
 
 module.exports = router;

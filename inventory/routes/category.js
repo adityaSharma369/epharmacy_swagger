@@ -89,7 +89,7 @@ var functions = {
                 var category = new fn.model('category')(categoryData);
                 category.save()
                     .then((data) => {
-                        return res.replyBack({msg: 'category added', data: data, http_code: 200})
+                        return res.replyBack({msg: 'category added', data: data, http_code: 201})
                     })
                     .catch((err) => {
                         return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -140,7 +140,7 @@ var functions = {
                     .then((category) => {
                         category.updateOne(_payload)
                             .then((data) => {
-                                return res.replyBack({msg: 'category edited', http_code: 200});
+                                return res.replyBack({msg: 'category edited', http_code: 201});
                             })
                             .catch((err) => {
                                 return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -229,7 +229,7 @@ var functions = {
                     .then((category) => {
                         category.updateOne(_payload)
                             .then((data) => {
-                                return res.replyBack({msg: 'category deleted', http_code: 200});
+                                return res.replyBack({msg: 'category deleted', http_code: 201});
                             })
                             .catch((err) => {
                                 return res.replyBack({ex: fn.err_format(err), http_code: 500});

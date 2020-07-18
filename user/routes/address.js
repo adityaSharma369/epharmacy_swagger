@@ -124,7 +124,7 @@ let functions = {
                     user.save()
                         .then((data) => {
                             data.full_address = undefined;
-                            return res.replyBack({msg: 'user address added', data: data, http_code: 200})
+                            return res.replyBack({msg: 'user address added', data: data, http_code: 201})
                         })
                         .catch((err) => {
                             return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -183,15 +183,17 @@ let functions = {
                 if (typeof req.body.is_primary != "undefined") {
                     _payload["is_primary"] = req.body.is_primary
                 }
-
                 fn.model('address')
                     .findOne({
                         _id: address_id
                     })
-                    .then((address) => {
+                    .then(async (address) => {
+                        await fn.model(address).updateMany({
+                            user_id: address.user_id
+                        }, {"is_primary": false})
                         address.updateOne(_payload)
                             .then((data) => {
-                                return res.replyBack({msg: 'address edited', http_code: 200});
+                                return res.replyBack({msg: 'address edited', http_code: 201});
                             })
                             .catch((err) => {
                                 return res.replyBack({ex: fn.err_format(err), http_code: 500});
@@ -260,7 +262,7 @@ let functions = {
                     .then((address) => {
                         address.updateOne(_payload)
                             .then((data) => {
-                                return res.replyBack({msg: 'address deleted', http_code: 200});
+                                return res.replyBack({msg: 'address deleted', http_code: 201});
                             })
                             .catch((err) => {
                                 return res.replyBack({ex: fn.err_format(err), http_code: 500});

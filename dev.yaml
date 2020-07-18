@@ -7,6 +7,7 @@ services:
     container_name: gateway
     build: ./gateway
 #    network_mode: host
+#    image: adityasharma369/gateway_ecommerce:${VERSION}
     command: nodemon server.js
     environment:
       - RABBIT_MQ_HOST=epharmacy_rabbitmq
@@ -26,6 +27,7 @@ services:
   user:
     container_name: user
     build: ./user
+#    image: adityasharma369/user:${VERSION}
     command: nodemon server.js
 #    network_mode: host
     environment:
@@ -46,6 +48,7 @@ services:
   inventory:
     container_name: inventory
     build: ./inventory
+#    image: adityasharma369/inventory:${VERSION}
     command: nodemon server.js
 #    network_mode: host
     environment:
@@ -65,6 +68,7 @@ services:
   ecommerce:
     container_name: ecommerce
     build: ./ecommerce
+#    image: adityasharma369/ecommerce:${VERSION}
     command: nodemon server.js
 #    network_mode: host
     environment:

@@ -14,19 +14,23 @@ let ProductSchema = new Schema({
         type: String,
         required: false
     },
-    manufacturer:{
-        type:String,
-        required:false
+    manufacturer: {
+        type: String,
+        required: false
     },
-    price:{
+    price: {
         type: Number,
-        required:true
+        required: true
     },
     is_visible: {
         type: Boolean,
         required: true
     },
     is_active: {
+        type: Boolean,
+        required: true
+    },
+    is_deleted: {
         type: Boolean,
         required: true
     }

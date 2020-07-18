@@ -344,7 +344,7 @@ let functions = {
                             user.update(_payload)
                                 .then((data) => {
                                     return res.replyBack({
-                                        http_code: 200,
+                                        http_code: 201,
                                         msg: 'profile edited'
                                     });
                                 })

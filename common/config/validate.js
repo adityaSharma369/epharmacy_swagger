@@ -91,24 +91,49 @@ validator.registerAsync('objectId', async (value, attributes, field_name, passes
 
 validator.registerAsync('array', async (value, attributes, field_name, passes) => {
     if (Array.isArray(value)) {
-        // if (attributes !== undefined) {
-        //     value.forEach((element) => {
-        //         console.log(typeof element)
-        //         if (attributes === "string") {
-        //             if (typeof element !== 'string') {
-        //                 passes(false, 'array value must be string ');
-        //                 return;
-        //             }
-        //         } else if (attributes === "numeric") {
-        //             if (typeof element !== "number") {
-        //                 passes(false, 'array value must be numeric');
-        //                 return;
-        //             }
-        //         }
-        //     });
-        // } else {
+        if (attributes !== undefined) {
+            value.forEach((element) => {
+                console.log(attributes, "0-o-0-0-0-0-0-0-0-0-0-0-0-0--0-0-0-")
+                if (attributes === "string") {
+                    if (typeof element !== 'string') {
+                        passes(false, 'array value must be string ');
+                    }
+                }
+                if (attributes === "objectId") {
+                    console.log(attributes, "0-o-0-0-0-0-0-0-0-0-0-0-0-0--0-0-0-", element)
+                    if (!ObjectId.isValid(element)) {
+                        passes(false, 'array value must be numeric');
+                    }
+                }
+            });
+        } else {
             passes(true)
-        // }
+        }
+    } else {
+        passes(false, 'Given ' + field_name + ' is not a array');
+    }
+});
+
+validator.registerAsync('arraytest', async (value, attributes, field_name, passes) => {
+    if (Array.isArray(value)) {
+        if (attributes !== undefined) {
+            value.forEach((element) => {
+                console.log(attributes, "0-o-0-0-0-0-0-0-0-0-0-0-0-0--0-0-0-")
+                if (attributes === "string") {
+                    if (typeof element !== 'string') {
+                        passes(false, 'array value must be string ');
+                    }
+                }
+                if (attributes === "objectId") {
+                    console.log(attributes, "0-o-0-0-0-0-0-0-0-0-0-0-0-0--0-0-0-", element)
+                    if (!ObjectId.isValid(element)) {
+                        passes(false, 'array value must be numeric');
+                    }
+                }
+            });
+        } else {
+            passes(true)
+        }
     } else {
         passes(false, 'Given ' + field_name + ' is not a array');
     }

@@ -1,8 +1,18 @@
 jwt = require('jsonwebtoken');
 modelFn = require('../common/config/functions');
 helpers = require("./helper")
-guest_endpoints = ['/account/login', '/account/logout',"/account/register","/static/*"];
-admin_endpoints = ['user.*',"/product/add","/product/edit","/product/delete","/category/add","/category/edit","/category/delete","/product/uploadImage"];
+guest_endpoints = ['/account/login', '/account/logout', "/account/register", "/static/*"];
+admin_endpoints = [
+    'user.*',
+    "/product/add",
+    "/product/edit",
+    "/product/delete",
+    "/category/add",
+    "/category/edit",
+    "/category/delete",
+    "/product/uploadImage",
+    "/order/confirmOrder",
+    "/order/rejectOrder"];
 JWT_SECRET = env.JWT_SECRET
 let middleware = {
     parseJwt: function (req, res, next) {
