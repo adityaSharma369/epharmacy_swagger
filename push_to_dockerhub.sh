@@ -1,5 +1,10 @@
 number=$(jq .version package.json)
 version=$(echo $number | tr -d '"')
+cd common
+sudo docker build --no-cache --build-arg version_default=$version -t epharmacy/common -f Dockerfile . 
+# sudo docker tag ecommerce:$version adityasharma369/ecommerce:$version
+# sudo docker login --username=adityasharma369 --password=Adi@.3690
+# sudo docker push adityasharma369/ecommerce:$version
 cd ecommerce
 sudo docker build --no-cache --build-arg version_default=$version -t ecommerce:$version -f Dockerfile . 
 sudo docker tag ecommerce:$version adityasharma369/ecommerce:$version
