@@ -65,14 +65,14 @@ jobs:
         debug: false
         command: |
           cd epharmacy_backend
-          sudo sh -c "sh docker_version_change.sh"
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2.0.0
-      env:
-        SLACK_CHANNEL: general
-        SLACK_COLOR: '#3278BD'
-        SLACK_ICON: https://github.com/rtCamp.png?size=48
-        SLACK_MESSAGE: 'Post Content :epharmacy Backend Updated With Latest build'
-        SLACK_TITLE: Post Title
-        SLACK_USERNAME: aditya
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          sudo sh docker_version_change.sh
+#     - name: Slack Notification
+#       uses: rtCamp/action-slack-notify@v2.0.0
+#       env:
+#         SLACK_CHANNEL: general
+#         SLACK_COLOR: '#3278BD'
+#         SLACK_ICON: https://github.com/rtCamp.png?size=48
+#         SLACK_MESSAGE: 'Post Content :epharmacy Backend Updated With Latest build'
+#         SLACK_TITLE: Post Title
+#         SLACK_USERNAME: aditya
+#         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
