@@ -1,92 +1,75 @@
-version: "2.3"
+version: "3.3"
 
 services:
 
-
-  gateway_2:
-    container_name: gateway_2
+  gateway:
+    container_name: gateway
     build: ./gateway
-#    network_mode: host
-#    image: adityasharma369/gateway_ecommerce:${VERSION}
-    command: nodemon server.js
+    command: nodemon app.js --legacy-watch
     environment:
-      - RABBIT_MQ_HOST=epharmacy_rabbitmq_2
+      - RABBIT_MQ_HOST=rabbitmq
       - RABBIT_MQ_USER=root
-      - RABBIT_MQ_PASSWORD=epharmacy
+      - RABBIT_MQ_PASSWORD=framework
       - RABBIT_MQ_PATTERN=gateway.*
-      - CURRENT_DOMAIN=http://52.221.46.156:4500/static
-      - MONGO_DB_DBNAME=epharmacy
-      - MONGO_BD_HOST=epharmacy_mongodb_2
-    volumes:
-      - ./gateway:/node/epharmacy/app
-      - ./common:/node/epharmacy/common
+      - RABBIT_MQ_QUEUE_NAME=gateway
+      - RABBIT_MQ_EXCHANGE_NAME=framework
+      - MONGODB_DBNAME=user
+      - MONGODB_HOST=mongodb
+      - JWT_SECRET=epharmacy
+      - PORT=80
+    #      - DEBUG=*
     ports:
-      - "4500:4500"
+      - "8080:80"
+    volumes:
+      - ./gateway:/var/app/
+      - ./common/utils:/var/app/modules/utils
+      - ./common/models:/var/app/modules/models
     restart: always
 
-  user_2:
-    container_name: user_2
+  user:
+    container_name: user
     build: ./user
-#    image: adityasharma369/user:${VERSION}
-    command: nodemon server.js
-#    network_mode: host
+    command: nodemon app.js --legacy-watch
     environment:
-      - RABBIT_MQ_HOST=epharmacy_rabbitmq_2
+      - RABBIT_MQ_HOST=rabbitmq
       - RABBIT_MQ_USER=root
-      - RABBIT_MQ_PASSWORD=epharmacy
+      - RABBIT_MQ_PASSWORD=framework
       - RABBIT_MQ_PATTERN=user.*
-      - CURRENT_DOMAIN=http://52.221.46.156:4500/static
-      - MONGO_DB_DBNAME=epharmacy
-      - MONGO_BD_HOST=epharmacy_mongodb_2
-
+      - RABBIT_MQ_QUEUE_NAME=user
+      - RABBIT_MQ_EXCHANGE_NAME=framework
+      - MONGODB_DBNAME=user
+      - MONGODB_HOST=mongodb
+      - PORT=80
+      - JWT_SECRET=epharmacy
+    #      - DEBUG=*
     volumes:
-      - ./user:/node/epharmacy/app
-      - ./common:/node/epharmacy/common
+      - ./user/:/var/app/
+      - ./common/utils:/var/app/modules/utils
+      - ./common/models:/var/app/modules/models
     restart: always
 
 
   inventory:
     container_name: inventory
     build: ./inventory
-#    image: adityasharma369/inventory:${VERSION}
-    command: nodemon server.js
-#    network_mode: host
+    command: nodemon app.js --legacy-watch
     environment:
-      - RABBIT_MQ_HOST=epharmacy_rabbitmq_2
+      - RABBIT_MQ_HOST=rabbitmq
       - RABBIT_MQ_USER=root
-      - RABBIT_MQ_PASSWORD=epharmacy
+      - RABBIT_MQ_PASSWORD=framework
       - RABBIT_MQ_PATTERN=inventory.*
-      - CURRENT_DOMAIN=http://52.221.46.156:4500/static
-      - MONGO_DB_DBNAME=epharmacy
-      - MONGO_BD_HOST=epharmacy_mongodb_2
-
+      - RABBIT_MQ_QUEUE_NAME=inventory
+      - RABBIT_MQ_EXCHANGE_NAME=framework
+      - MONGODB_DBNAME=inventory
+      - MONGODB_HOST=mongodb
+      - PORT=80
+    #      - DEBUG=*
     volumes:
-      - ./inventory:/node/epharmacy/app
-      - ./common:/node/epharmacy/common
+      - ./inventory:/var/app/
+      - ./common/utils:/var/app/modules/utils
+      - ./common/models:/var/app/modules/models
     restart: always
-
-  ecommerce:
-    container_name: ecommerce
-    build: ./ecommerce
-#    image: adityasharma369/ecommerce:${VERSION}
-    command: nodemon server.js
-#    network_mode: host
-    environment:
-      - RABBIT_MQ_HOST=epharmacy_rabbitmq_2
-      - RABBIT_MQ_USER=root
-      - RABBIT_MQ_PASSWORD=epharmacy
-      - RABBIT_MQ_PATTERN=ecommerce.*
-      - CURRENT_DOMAIN=http://52.221.46.156:4500/static
-      - MONGO_DB_DBNAME=epharmacy
-      - MONGO_BD_HOST=epharmacy_mongodb_2
-
-    volumes:
-      - ./ecommerce:/node/epharmacy/app
-      - ./common:/node/epharmacy/common
-    restart: always
-
 networks:
   default:
     external:
-      name: epharmacy
-
+      name: nodejs_framework

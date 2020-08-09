@@ -1,31 +1,29 @@
 version: "3.3"
 services:
 
- rabbitmq:
-   image: "rabbitmq:3-management"
-   container_name : epharmacy_rabbitmq_2
-   ports:
-     - "5673:5672"
-   labels:
-     NAME: "rabbitmq"
-   environment:
-     - RABBITMQ_DEFAULT_USER=root
-     - RABBITMQ_DEFAULT_PASS=epharmacy
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    ports:
+      - "15673:15672"
+      - "5673:5672"
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=root
+      - RABBITMQ_DEFAULT_PASS=framework
 
-
- mongodb:
-   image: mongo
-   container_name : epharmacy_mongodb_2
-   ports:
-     - "27018:27017"
-   environment:
-     - MONGODB_DATABASE=epharmacy
-   volumes:
-     - ./_data/Mongo/:/data/db
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGODB_DATABASE=mongodb
+    volumes:
+      - /home/swethu/node/data:/data/db
 
 networks:
   default:
     external:
-      name: epharmacy
-
+      name: nodejs_framework
 

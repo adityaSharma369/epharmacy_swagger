@@ -1,53 +1,57 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+let mg = require('mongoose');
+const Schema = mg.Schema;
 
-let UserSchema = Schema({
-        username: {
+const Model = function (mongoose) {
+    let UserSchema = new Schema({
+        name: {
             type: String
         },
         email: {
             type: String
         },
-        password: {
+        password:{
             type: String
         },
-        contact: {
+        phone: {
             type: String
         },
-        role: {
+        role:{
+            type: String
+        },
+        description: {
+            type: String
+        },
+        age: {
+            type: Number
+        },
+        gender: {
+            type: String
+        },
+        membership_type:{
+            type: String
+        },
+        is_phone_verified: {
+            type: Boolean
+        },
+        is_email_verified: {
             type: String
         },
         is_active: {
             type: Boolean
         },
-        profilePic: {
-            type: String
-        },
-        oAuthId: {
-            type: String
-        },
-        registrationType: {
-            type: String
-        },
-        isMobileVerified: {
-            type: Boolean
-        },
-        isEmailVerified: {
-            type: Boolean
-        },
         is_deleted: {
             type: Boolean
-        },
-    },
-    {
-        strict: false,
+        }
+    }, {
         timestamps: {
             createdAt: '_created',
             updatedAt: '_updated'
         },
-        collection: 'user',
-    })
+        collection: 'users'
+    });
 
+    mongoose.model('users', UserSchema);
+    return mongoose;
+}
 
-UserSchema.plugin(paginator);
-module.exports = mongoose.model('user', UserSchema);
+module.exports = Model

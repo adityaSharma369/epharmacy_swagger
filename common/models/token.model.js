@@ -1,25 +1,24 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+let mg = require('mongoose');
+const Schema = mg.Schema;
 
-let TokenSchema = new Schema({
-	user_id: {
-		type: Schema.Types.ObjectId,
-		required: true
-	},
-	token: {
-		type: String,
-		required: true
-	},
-	is_active: {
-		type: Boolean,
-		required: true
-	},
-}, {
-	timestamps: {
-		createdAt: '_created',
-		updatedAt: '_updated'
-	}
-});
+const Model = function (mongoose) {
+    let TokenSchema = new Schema({
+        user_id: {
+            type: Schema.Types.ObjectId,
+        },
+        token: {
+            type: String
+        }
+    }, {
+        timestamps: {
+            createdAt: '_created',
+            updatedAt: '_updated'
+        },
+        collection: 'tokens'
+    });
 
-// Export the model
-module.exports = mongoose.model('Token', TokenSchema);
+    mongoose.model('tokens', TokenSchema);
+    return mongoose;
+}
+
+module.exports = Model
