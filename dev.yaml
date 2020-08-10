@@ -20,7 +20,7 @@ services:
       - PORT=80
     #      - DEBUG=*
     ports:
-      - "8080:80"
+      - "4500:80"
     volumes:
       - ./gateway:/var/app/
       - ./common/utils:/var/app/modules/utils

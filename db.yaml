@@ -20,7 +20,7 @@ services:
     environment:
       - MONGODB_DATABASE=mongodb
     volumes:
-      - /home/swethu/node/data:/data/db
+      - ./gateway/data:/data/db
 
 networks:
   default:
