@@ -53,6 +53,33 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
         }
     }
 
+    async function userListLite(req, res, next) {
+        try {
+            let filter = {};
+            if (typeof req.body.search != "undefined") {
+                filter = {
+                    $or: [{name: {$regex: req.body.search, $options: 'si'}}, {
+                        email: {
+                            $regex: req.body.search,
+                            $options: 'si'
+                        },
+                    }, {
+                        mobile: {
+                            $regex: req.body.search,
+                            $options: 'si'
+                        },
+                    }]
+                }
+            }
+            filter["is_deleted"] = false
+            let userDetails = await userRecord.getUsers(filter);
+            res.respond({http_code: 200, msg: 'users list', data: userDetails})
+        } catch (e) {
+            // error is unknown
+            res.respond({http_code: 500, error: e.message})
+        }
+    }
+
     async function addUser(req, res, next) {
 
         try {
@@ -267,7 +294,7 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
     }
 
     return {
-        getAllUsers, addUser, viewUser, deleteUser, editUser, toggleUser
+        getAllUsers, addUser, viewUser, deleteUser, editUser, toggleUser, userListLite
     }
 
 }

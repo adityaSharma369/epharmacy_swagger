@@ -8,6 +8,7 @@ const MoleculeController = require('./controllers/MoleculeController');
 const ManufacturerController = require('./controllers/ManufacturerController');
 const SymptomController = require('./controllers/SymptomController');
 const BrandController = require('./controllers/BrandController');
+const CategoryController = require('./controllers/CategoryController');
 
 const RabbitMQ = require('./../utils/RabbitMQ');
 const MongoDB = require('./../utils/MongoDB');
@@ -35,6 +36,7 @@ const APIDependencies = async function (diProvider) {
     diProvider.service('ManufacturerController', ManufacturerController, 'Validator', 'RabbitMQ');
     diProvider.service('SymptomController', SymptomController, 'Validator', 'RabbitMQ');
     diProvider.service('BrandController', BrandController, 'Validator', 'RabbitMQ');
+    diProvider.service('CategoryController', CategoryController, 'Validator', 'RabbitMQ');
 
 };
 

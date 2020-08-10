@@ -21,7 +21,7 @@ const TokenRecord = function (db) {
     async function getToken(filter) {
         return new Promise((resolve, reject) => {
             try {
-                db.model('tokens').find(filter).then((data) => {
+                db.model('tokens').findOne(filter).then((data) => {
                     resolve(data);
                 }).catch((e) => {
                     reject(e);

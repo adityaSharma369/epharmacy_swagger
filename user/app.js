@@ -4,9 +4,11 @@ env = process.env;
 const exchange = env.RABBIT_MQ_EXCHANGE_NAME
 const queueName = env.RABBIT_MQ_QUEUE_NAME
 const pattern = env.RABBIT_MQ_PATTERN
-
+bcrypt = require('bcryptjs');
+jwt = require('jsonwebtoken');
+JWT_SECRET = env.JWT_SECRET
 rmq = RabbitMQ()
-CURRENT_DOMAIN=env.CURRENT_DOMAIN
+CURRENT_DOMAIN = env.CURRENT_DOMAIN
 const dependencies = require('./dependencies')();
 const modules = require('./modules');
 

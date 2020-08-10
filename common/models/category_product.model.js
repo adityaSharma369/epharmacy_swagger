@@ -2,17 +2,11 @@ let mg = require('mongoose');
 const Schema = mg.Schema;
 
 const Model = function (mongoose) {
-    let CategorySchema = new Schema({
-        title: {
-            type: String
+    let CategoryProductSchema = new Schema({
+        category_id: {
+            type: Schema.Types.ObjectId,
         },
-        description: {
-            type: String
-        },
-        image: {
-            type: String
-        },
-        parent_id: {
+        product_id: {
             type: Schema.Types.ObjectId,
         },
         is_active: {
@@ -26,10 +20,10 @@ const Model = function (mongoose) {
             createdAt: '_created',
             updatedAt: '_updated'
         },
-        collection: 'categories'
+        collection: 'category_products'
     });
 
-    mongoose.model('categories', CategorySchema);
+    mongoose.model('category_products', CategoryProductSchema);
     return mongoose;
 }
 

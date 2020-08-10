@@ -1,4 +1,5 @@
 const RabbitMQ = require("./modules/utils/RabbitMQ")
+const Helpers = require("./modules/utils/Helpers")
 
 env = process.env;
 const exchange = env.RABBIT_MQ_EXCHANGE_NAME
@@ -6,6 +7,7 @@ const queueName = env.RABBIT_MQ_QUEUE_NAME
 const pattern = env.RABBIT_MQ_PATTERN
 
 rmq = RabbitMQ()
+helper = Helpers
 CURRENT_DOMAIN=env.CURRENT_DOMAIN
 const dependencies = require('./dependencies')();
 const modules = require('./modules');

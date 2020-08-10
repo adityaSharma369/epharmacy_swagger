@@ -40,6 +40,26 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
         }
     }
 
+    async function moleculeListLite(req, res, next) {
+
+        try {
+
+            let filter = {};
+            if (typeof req.body.search != "undefined") {
+                filter = {
+                    $or: [{title: {$regex: req.body.search, $options: 'si'}}]
+                }
+            }
+            filter["is_deleted"] = false
+            let response = await moleculesRecord.getMolecules(filter);
+            res.respond({http_code: 200, msg: 'list', data: response})
+
+
+        } catch (e) {
+            res.respond({http_code: 500, error: e.message})
+        }
+    }
+
     async function addMolecule(req, res, next) {
 
         try {
@@ -62,8 +82,8 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
                     let moleculesObject = {
                         "title": req.body["title"],
                         "description": req.body["description"],
-                        "is_active":true,
-                        "is_deleted":false,
+                        "is_active": true,
+                        "is_deleted": false,
                     };
                     let response = await moleculesRecord.addMolecule(moleculesObject);
                     res.respond({http_code: 200, msg: 'molecules added', data: response})
@@ -159,13 +179,13 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
                 try {
                     let molecule_id = req.body["molecule_id"]
                     let molecules = await moleculesRecord.getMolecule({"_id": molecule_id})
-                    if(req.body["title"] !== null){
+                    if (req.body["title"] !== null) {
                         molecules["title"] = req.body["title"]
                     }
-                    if(req.body["description"] !== null){
+                    if (req.body["description"] !== null) {
                         molecules["description"] = req.body["description"]
                     }
-                    let data = await moleculesRecord.editMolecule({"_id": molecule_id},molecules);
+                    let data = await moleculesRecord.editMolecule({"_id": molecule_id}, molecules);
                     return res.respond({
                         http_code: 200,
                         msg: 'molecules edited',
@@ -203,14 +223,14 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
                     let molecule_id = req.body.molecule_id
                     let msg = ""
                     let molecules = await moleculesRecord.getMolecule({"_id": molecule_id})
-                    if(molecules["is_active"] === false){
+                    if (molecules["is_active"] === false) {
                         msg = "molecules activated"
                         molecules["is_active"] = true
-                    }else{
+                    } else {
                         msg = "molecules de_activated"
                         molecules["is_active"] = false
                     }
-                    let data = await moleculesRecord.editMolecule({"_id": molecule_id},molecules);
+                    let data = await moleculesRecord.editMolecule({"_id": molecule_id}, molecules);
                     return res.respond({
                         http_code: 200,
                         msg: msg,
@@ -227,7 +247,7 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
     }
 
     return {
-        getAllMolecules, addMolecule, viewMolecule, deleteMolecule, editMolecule, toggleMolecule
+        getAllMolecules, addMolecule, viewMolecule, deleteMolecule, editMolecule, toggleMolecule,moleculeListLite
     }
 
 }

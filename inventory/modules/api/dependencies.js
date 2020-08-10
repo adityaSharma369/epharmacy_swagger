@@ -19,6 +19,7 @@ const MoleculeRecord = require('./db/MoleculeRecord');
 const ManufacturerRecord = require('./db/ManufacturerRecord');
 const SymptomRecord = require('./db/SymptomRecord');
 const CategoryRecord = require('./db/CategoryRecord');
+const CategoryProductRecord = require('./db/CategoryProductRecord');
 
 env = process.env;
 const exchange = env.RABBIT_MQ_EXCHANGE_NAME
@@ -38,16 +39,18 @@ const APIDependencies = async function (diProvider) {
     diProvider.service('MoleculeRecord', MoleculeRecord, 'MongoDB');
     diProvider.service('ManufacturerRecord', ManufacturerRecord, 'MongoDB');
     diProvider.service('SymptomRecord', SymptomRecord, 'MongoDB');
+    diProvider.service('CategoryProductRecord', CategoryProductRecord, 'MongoDB');
     diProvider.service('CategoryRecord', CategoryRecord, 'MongoDB');
     diProvider.service('BrandRecord', BrandRecord, 'MongoDB');
 
-    diProvider.service('ProductController', ProductController, 'Validator', 'RabbitMQ', 'ProductRecord','ProductImageRecord');
+    diProvider.service('ProductController', ProductController, 'Validator', 'RabbitMQ', 'ProductRecord',
+        'ProductImageRecord','BrandRecord','ManufacturerRecord','MoleculeRecord');
 
     diProvider.service('BrandController', BrandController, 'Validator', 'RabbitMQ', 'BrandRecord');
     diProvider.service('ManufacturerController', ManufacturerController, 'Validator', 'RabbitMQ', 'ManufacturerRecord');
     diProvider.service('MoleculeController', MoleculeController, 'Validator', 'RabbitMQ', 'MoleculeRecord');
     diProvider.service('SymptomController', SymptomController, 'Validator', 'RabbitMQ', 'SymptomRecord');
-    diProvider.service('CategoryController', CategoryController, 'Validator', 'RabbitMQ', 'CategoryRecord');
+    diProvider.service('CategoryController', CategoryController, 'Validator', 'RabbitMQ', 'CategoryRecord',"CategoryProductRecord");
 };
 
 module.exports = APIDependencies;

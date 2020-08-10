@@ -179,7 +179,6 @@ const ProductController = function (Validator, rabbitMQ, userRecord) {
 
         } catch (e) {
             // error is unknown
-            console.log(e);
             res.respond({http_code: 500, error: e.message})
         }
     }
@@ -251,7 +250,6 @@ const ProductController = function (Validator, rabbitMQ, userRecord) {
 
         } catch (e) {
             // error is unknown
-            console.log(e);
             res.respond({http_code: 500, error: e.message})
         }
     }
@@ -274,7 +272,6 @@ const ProductController = function (Validator, rabbitMQ, userRecord) {
                 try {
                     const image = req.file
                     const product_id = req.body.product_id
-                    console.log(product_id, "dfasdfsdfasdfasdfsdf")
                     const target_path = './uploads/products/' + product_id
                     if (!fs.existsSync(target_path)) {
                         fs.mkdirSync(target_path, {recursive: true});
@@ -305,7 +302,6 @@ const ProductController = function (Validator, rabbitMQ, userRecord) {
 
         } catch (e) {
             // error is unknown
-            console.log(e);
             res.respond({http_code: 500, error: e.message})
         }
     }
@@ -341,7 +337,6 @@ const ProductController = function (Validator, rabbitMQ, userRecord) {
 
         } catch (e) {
             // error is unknown
-            console.log(e);
             res.respond({http_code: 500, error: e.message})
         }
     }
@@ -377,7 +372,6 @@ const ProductController = function (Validator, rabbitMQ, userRecord) {
 
         } catch (e) {
             // error is unknown
-            console.log(e);
             res.respond({http_code: 500, error: e.message})
         }
     }

@@ -1,4 +1,5 @@
-const ProductController = function (Validator, rabbitMQ, productRecord, productImageRecord) {
+const ProductController = function (Validator, rabbitMQ, productRecord, productImageRecord,
+                                    brandRecord, manufacturerRecord, moleculeRecord) {
 
     async function getAllProducts(req, res, next) {
 
@@ -24,12 +25,7 @@ const ProductController = function (Validator, rabbitMQ, productRecord, productI
                     let filter = {};
                     if (typeof req.body.search != "undefined") {
                         filter = {
-                            $or: [{name: {$regex: req.body.search, $options: 'si'}}, {
-                                title: {
-                                    $regex: req.body.search,
-                                    $options: 'si'
-                                },
-                            }]
+                             $or: [{title: {$regex: req.body.search, $options: 'si'}}]
                         }
                     }
                     filter["is_deleted"] = false
@@ -120,11 +116,14 @@ const ProductController = function (Validator, rabbitMQ, productRecord, productI
                     }
                     data['_doc']["image"] = await productImageRecord.getProductImages({"product_id": product_id});
                     for (let i = 0; i < data["_doc"]["image"].length; i++) {
-                        data["_doc"]["image"][i]["image"] = CURRENT_DOMAIN + "/product_images/" + product_id + "/" + data["_doc"]["image"][i]["image"]
+                        data["_doc"]["image"][i]["image"] = CURRENT_DOMAIN + "/products/" + product_id + "/" + data["_doc"]["image"][i]["image"]
                     }
+                    data["_doc"]["brand"] = await brandRecord.getBrand({_id: data["brand_id"]})
+                    data["_doc"]["molecule"] = await moleculeRecord.getMolecule({_id: data["molecule_id"]})
+                    data["_doc"]["manufacturer"] = await manufacturerRecord.getManufacturer({_id: data["manufacturer_id"]})
                     return res.respond({
                         http_code: 200,
-                        msg: 'image deleted',
+                        msg: 'product',
                         data: data
                     });
                 } catch (e) {

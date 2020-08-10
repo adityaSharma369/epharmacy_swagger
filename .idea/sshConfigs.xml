@@ -2,7 +2,7 @@
 <project version="4">
   <component name="SshConfigs">
     <configs>
-      <sshConfig host="52.221.46.156" id="aa79f668-c147-4582-81d9-b159e85c3714" keyPath="$PROJECT_DIR$/../../ssh_files/tericsoft_general_purpose_dev.pem" port="22" nameFormat="DESCRIPTIVE" username="ubuntu" />
+      <sshConfig host="13.232.3.163" id="aa79f668-c147-4582-81d9-b159e85c3714" keyPath="$PROJECT_DIR$/../../ssh_files/anudeep_exclusive" port="22" nameFormat="DESCRIPTIVE" username="anudeep" />
     </configs>
   </component>
 </project>

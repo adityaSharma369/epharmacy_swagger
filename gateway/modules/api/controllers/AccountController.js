@@ -87,6 +87,19 @@ const AccountController = function (Validator, rabbitMQ, userRecord) {
         }
     }
 
+    async function logout(req, res, next) {
+        try {
+            let token;
+            token = req.headers['authorization'];
+            let userObject = {"user_id": req.decoded["_id"], "token": token.split(" ")[1]}
+            let userResponse = await rabbitMQ.execute("user.account.logout", userObject, 100)
+            res.respond(JSON.parse(userResponse.toString()))
+
+        } catch (e) {
+            res.respond({http_code: 500, error: e.message})
+        }
+    }
+
     async function checkLogin(req, res, next) {
         try {
             let token;
@@ -157,7 +170,7 @@ const AccountController = function (Validator, rabbitMQ, userRecord) {
             }
             let userResponse = await rabbitMQ.execute("user.edit", userObject, 100)
             userResponse = JSON.parse(userResponse.toString())
-            if(userResponse.http_code === 200){
+            if (userResponse.http_code === 200) {
                 userResponse.msg = "image uploaded"
             }
             res.respond(userResponse)
@@ -170,7 +183,7 @@ const AccountController = function (Validator, rabbitMQ, userRecord) {
 
 
     return {
-        register, login, checkLogin, getProfile, editProfile, uploadPic
+        register, login, checkLogin, getProfile, editProfile, uploadPic, logout
     }
 
 }

@@ -15,11 +15,15 @@ function AttachRequestHelpers() {
         }
         res.respond = function (payload) {
             payload.http_code = (payload.http_code) ? payload.http_code : 200;
+            if(!payload.success){
+                payload.success = payload.http_code < 400;
+            }
             const response = {
                 msg: payload.msg,
                 error: payload.error,
                 errors: payload.errors,
                 data: payload.data,
+                success: payload.success
             };
             return res.status(payload.http_code)
                 .send(response);

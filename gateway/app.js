@@ -18,7 +18,11 @@ let storage = multer.diskStorage({
         cb(null, './uploads/')
     },
     filename: function (req, file, cb) {
-        cb(null, uuid.v4() + '.' + file.mimetype.split("/")[1]);
+        let ext = file.mimetype.split("/")[1]
+        if(["jpeg","jpg","png","JPEG","JPG"].indexOf(ext) === -1){
+            ext = "jpeg"
+        }
+        cb(null, uuid.v4() + '.' + ext);
     }
 });
 

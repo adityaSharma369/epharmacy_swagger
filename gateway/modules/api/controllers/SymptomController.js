@@ -31,6 +31,23 @@ const SymptomController = function (Validator, rabbitMQ, symptomsRecord) {
         }
     }
 
+     async function symptomListLite(req, res, next) {
+        try {
+                try {
+                    let productObject = {
+                        "search":req.body.search
+                    }
+                    let response = await rabbitMQ.execute("inventory.symptom.listLite", productObject, 100)
+                    res.respond(JSON.parse(response.toString()))
+                } catch (e) {
+                    res.respond({http_code: 500, error: e.message})
+                }
+        } catch (e) {
+            res.respond({http_code: 500, error: e.message})
+        }
+    }
+
+
     async function addSymptom(req, res, next) {
 
         try {
@@ -195,7 +212,7 @@ const SymptomController = function (Validator, rabbitMQ, symptomsRecord) {
     }
 
     return {
-        getAllSymptoms, addSymptom, viewSymptom, deleteSymptom, editSymptom, toggleSymptom
+        getAllSymptoms, addSymptom, viewSymptom, deleteSymptom, editSymptom, toggleSymptom,symptomListLite
     }
 
 }

@@ -12,6 +12,8 @@ module.exports.apiRouter = (dependencies, app) => {
     const ManufacturerInvoker = makeRouteInvoker(dependencies, 'ManufacturerController')
     const SymptomInvoker = makeRouteInvoker(dependencies, 'SymptomController')
     const BrandInvoker = makeRouteInvoker(dependencies, 'BrandController')
+    const CategoryInvoker = makeRouteInvoker(dependencies, 'CategoryController')
+
 
     middleware.AttachRequestHelpers(dependencies, app)
 
@@ -21,12 +23,14 @@ module.exports.apiRouter = (dependencies, app) => {
     app.get('/api/account/checkLogin', AccountInvoker('checkLogin'));
 
     middleware.ParseAuthToken(dependencies, app)
+    app.get('/api/account/logout', AccountInvoker('logout'));
 
     app.get('/api/account/getProfile', AccountInvoker('getProfile'));
     app.post('/api/account/editProfile', AccountInvoker('editProfile'));
     app.post('/api/account/uploadImage',upload.single("image"),AccountInvoker("uploadPic"))
 
     app.post('/api/user/list', UserInvoker("getAllUsers"));
+    app.post('/api/user/listLite', UserInvoker("userListLite"));
     app.post('/api/user/add', UserInvoker("addUser"));
     app.get('/api/user/view/:user_id', UserInvoker("viewUser"));
     app.post('/api/user/edit', UserInvoker("editUser"));
@@ -47,6 +51,7 @@ module.exports.apiRouter = (dependencies, app) => {
 
 
     app.post('/api/molecule/list', MoleculeInvoker("getAllMolecules"));
+    app.post('/api/molecule/listLite', MoleculeInvoker("moleculeListLite"));
     app.post('/api/molecule/add', MoleculeInvoker("addMolecule"));
     app.post('/api/molecule/edit', MoleculeInvoker("editMolecule"));
     app.get('/api/molecule/delete/:molecule_id', MoleculeInvoker("deleteMolecule"));
@@ -55,6 +60,7 @@ module.exports.apiRouter = (dependencies, app) => {
 
 
     app.post('/api/manufacturer/list', ManufacturerInvoker("getAllManufacturers"));
+    app.post('/api/manufacturer/listLite', ManufacturerInvoker("manufacturerListLite"));
     app.post('/api/manufacturer/add', ManufacturerInvoker("addManufacturer"));
     app.post('/api/manufacturer/edit', ManufacturerInvoker("editManufacturer"));
     app.get('/api/manufacturer/delete/:manufacturer_id', ManufacturerInvoker("deleteManufacturer"));
@@ -62,6 +68,7 @@ module.exports.apiRouter = (dependencies, app) => {
     app.get('/api/manufacturer/toggle/:manufacturer_id', ManufacturerInvoker("toggleManufacturer"));
 
     app.post('/api/symptom/list', SymptomInvoker("getAllSymptoms"));
+    app.post('/api/symptom/listLite', SymptomInvoker("symptomListLite"));
     app.post('/api/symptom/add', SymptomInvoker("addSymptom"));
     app.post('/api/symptom/edit', SymptomInvoker("editSymptom"));
     app.get('/api/symptom/delete/:symptom_id', SymptomInvoker("deleteSymptom"));
@@ -69,10 +76,21 @@ module.exports.apiRouter = (dependencies, app) => {
     app.get('/api/symptom/toggle/:symptom_id', SymptomInvoker("toggleSymptom"));
 
     app.post('/api/brand/list', BrandInvoker("getAllBrands"));
+    app.post('/api/brand/listLite', BrandInvoker("brandListLite"));
     app.post('/api/brand/add', BrandInvoker("addBrand"));
     app.post('/api/brand/edit', BrandInvoker("editBrand"));
     app.get('/api/brand/delete/:brand_id', BrandInvoker("deleteBrand"));
     app.get('/api/brand/view/:brand_id', BrandInvoker("viewBrand"));
     app.get('/api/brand/toggle/:brand_id', BrandInvoker("toggleBrand"));
 
+    app.post('/api/category/list', CategoryInvoker("getAllCategories"));
+    app.post('/api/category/listLite', CategoryInvoker("categoryListLite"));
+    app.post('/api/category/add',upload.single("image"), CategoryInvoker("addCategory"));
+    app.post('/api/category/edit', CategoryInvoker("editCategory"));
+    app.post('/api/category/linkProduct', CategoryInvoker("linkProduct"));
+    app.post('/api/category/unlinkProduct', CategoryInvoker("unlinkProduct"));
+    app.post('/api/category/getCategoryProducts', CategoryInvoker("getCategoryProducts"));
+    app.get('/api/category/delete/:category_id', CategoryInvoker("deleteCategory"));
+    app.get('/api/category/view/:category_id', CategoryInvoker("viewCategory"));
+    app.get('/api/category/toggle/:category_id', CategoryInvoker("toggleCategory"));
 };

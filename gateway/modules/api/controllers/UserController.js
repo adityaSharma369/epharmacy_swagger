@@ -33,6 +33,19 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
         }
     }
 
+    async function userListLite(req, res, next) {
+
+        try {
+            let userObject = req.body
+            let userResponse = await rabbitMQ.execute("user.listLite", userObject, 100)
+            res.respond(JSON.parse(userResponse.toString()))
+
+        } catch (e) {
+            // error is unknown
+            res.respond({http_code: 500, error: e.message})
+        }
+    }
+
     async function addUser(req, res, next) {
 
         try {
@@ -269,7 +282,7 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
 
 
     return {
-        getAllUsers, addUser, viewUser, deleteUser, editUser, toggleUser, uploadImage
+        getAllUsers, addUser, viewUser, deleteUser, editUser, toggleUser, uploadImage, userListLite
     }
 
 }

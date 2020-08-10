@@ -40,6 +40,27 @@ const SymptomController = function (Validator, rabbitMQ, symptomsRecord) {
         }
     }
 
+    async function symptomListLite(req, res, next) {
+
+        try {
+
+            let filter = {};
+            if (typeof req.body.search != "undefined") {
+                filter = {
+                    $or: [{title: {$regex: req.body.search, $options: 'si'}}]
+                }
+            }
+            filter["is_deleted"] = false
+            let response = await symptomsRecord.getSymptoms(filter);
+            res.respond({http_code: 200, msg: 'list', data: response})
+
+
+        } catch (e) {
+            res.respond({http_code: 500, error: e.message})
+        }
+    }
+
+
     async function addSymptom(req, res, next) {
 
         try {
@@ -62,8 +83,8 @@ const SymptomController = function (Validator, rabbitMQ, symptomsRecord) {
                     let symptomsObject = {
                         "title": req.body["title"],
                         "description": req.body["description"],
-                        "is_active":true,
-                        "is_deleted":false,
+                        "is_active": true,
+                        "is_deleted": false,
                     };
                     let response = await symptomsRecord.addSymptom(symptomsObject);
                     res.respond({http_code: 200, msg: 'symptoms added', data: response})
@@ -159,13 +180,13 @@ const SymptomController = function (Validator, rabbitMQ, symptomsRecord) {
                 try {
                     let symptom_id = req.body["symptom_id"]
                     let symptoms = await symptomsRecord.getSymptom({"_id": symptom_id})
-                    if(req.body["title"] !== null){
+                    if (req.body["title"] !== null) {
                         symptoms["title"] = req.body["title"]
                     }
-                    if(req.body["description"] !== null){
+                    if (req.body["description"] !== null) {
                         symptoms["description"] = req.body["description"]
                     }
-                    let data = await symptomsRecord.editSymptom({"_id": symptom_id},symptoms);
+                    let data = await symptomsRecord.editSymptom({"_id": symptom_id}, symptoms);
                     return res.respond({
                         http_code: 200,
                         msg: 'symptoms edited',
@@ -203,14 +224,14 @@ const SymptomController = function (Validator, rabbitMQ, symptomsRecord) {
                     let symptom_id = req.body.symptom_id
                     let msg = ""
                     let symptoms = await symptomsRecord.getSymptom({"_id": symptom_id})
-                    if(symptoms["is_active"] === false){
+                    if (symptoms["is_active"] === false) {
                         msg = "symptoms activated"
                         symptoms["is_active"] = true
-                    }else{
+                    } else {
                         msg = "symptoms de_activated"
                         symptoms["is_active"] = false
                     }
-                    let data = await symptomsRecord.editSymptom({"_id": symptom_id},symptoms);
+                    let data = await symptomsRecord.editSymptom({"_id": symptom_id}, symptoms);
                     return res.respond({
                         http_code: 200,
                         msg: msg,
@@ -227,7 +248,7 @@ const SymptomController = function (Validator, rabbitMQ, symptomsRecord) {
     }
 
     return {
-        getAllSymptoms, addSymptom, viewSymptom, deleteSymptom, editSymptom, toggleSymptom
+        getAllSymptoms, addSymptom, viewSymptom, deleteSymptom, editSymptom, toggleSymptom, symptomListLite
     }
 
 }

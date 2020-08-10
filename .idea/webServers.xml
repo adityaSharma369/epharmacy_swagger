@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="7bb199ed-71d7-4750-a22e-d68f0da4adc8" name="52.221.46.156">
-        <fileTransfer accessType="SFTP" host="52.221.46.156" port="22" sshConfigId="aa79f668-c147-4582-81d9-b159e85c3714" sshConfig="ubuntu@52.221.46.156:22 key" keyPair="true">
+      <webServer id="4cacbec6-dd70-4bf3-b50c-8fdf19c9ec38" name="epharmacy">
+        <fileTransfer accessType="SFTP" host="13.232.3.163" port="22" sshConfigId="aa79f668-c147-4582-81d9-b159e85c3714" sshConfig="anudeep@13.232.3.163:22 key" keyPair="true">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

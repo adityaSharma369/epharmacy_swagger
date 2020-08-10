@@ -31,6 +31,20 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
         }
     }
 
+    async function moleculeListLite(req, res, next) {
+
+        try {
+
+            let productObject = req.body
+            let response = await rabbitMQ.execute("inventory.molecule.listLite", productObject, 100)
+            res.respond(JSON.parse(response.toString()))
+
+
+        } catch (e) {
+            res.respond({http_code: 500, error: e.message})
+        }
+    }
+
     async function addMolecule(req, res, next) {
 
         try {
@@ -53,8 +67,8 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
                     let moleculesObject = {
                         "title": req.body["title"],
                         "description": req.body["description"],
-                        "is_active":true,
-                        "is_deleted":false,
+                        "is_active": true,
+                        "is_deleted": false,
                     };
                     let response = await rabbitMQ.execute("inventory.molecule.add", moleculesObject, 100)
                     res.respond(JSON.parse(response.toString()))
@@ -147,7 +161,7 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
 
             validation.passes(async () => {
                 try {
-                   let moleculeObj = req.body
+                    let moleculeObj = req.body
                     let response = await rabbitMQ.execute("inventory.molecule.edit", moleculeObj, 100)
                     res.respond(JSON.parse(response.toString()))
                 } catch (e) {
@@ -195,7 +209,7 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
     }
 
     return {
-        getAllMolecules, addMolecule, viewMolecule, deleteMolecule, editMolecule, toggleMolecule
+        getAllMolecules, addMolecule, viewMolecule, deleteMolecule, editMolecule, toggleMolecule, moleculeListLite
     }
 
 }

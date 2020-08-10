@@ -1,7 +1,4 @@
-let bcrypt = require('bcryptjs');
-let jwt = require('jsonwebtoken');
-let env = process.env;
-let JWT_SECRET = env.JWT_SECRET
+
 
 const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord) {
 
@@ -134,6 +131,48 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
         }
     }
 
+    async function logout(req, res, next) {
+
+        try {
+            let rules = {
+                "user_id": "required|objectId|exists:users,_id",
+                "token": "required",
+            };
+            let validation = new Validator(req.body, rules);
+
+            validation.fails(() => {
+                return res.err({
+                    errors: validation.errors.errors,
+                    http_code: 400
+                });
+            });
+
+            validation.passes(async () => {
+                try {
+                    console.log(req.body)
+                    let checkLogout = await tokenRecord.deleteToken({user_id: req.body.user_id, token: req.body.token})
+                    console.log(checkLogout,"llllllllll")
+                    return res.respond({
+                        http_code: 200,
+                        msg: 'logout successful',
+                    });
+                } catch (e) {
+                    console.log(e);
+                    return res.err({
+                        error: e.message,
+                        http_code: 500
+                    });
+                }
+            });
+        } catch (e) {
+            console.log(e);
+            return res.err({
+                error: e.message,
+                http_code: 500
+            });
+        }
+    }
+
     async function checkLogin(req, res, next) {
 
         try {
@@ -152,13 +191,20 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
                 try {
                     let token = req.body["token"]
                     let user = jwt.verify(token, env.JWT_SECRET);
-
                     if (!user) {
                         return res.respond({
                             msg: 'not logged in',
                             http_code: 401
                         });
                     } else {
+                        let checkToken = await tokenRecord.getToken({user_id: user._id})
+                        console.log(checkToken,";;;;;;;;;;;;;;;;")
+                        if (!checkToken) {
+                            return res.respond({
+                                msg: 'not logged in',
+                                http_code: 401
+                            });
+                        }
                         delete user.password
                         return res.respond({
                             http_code: 200,
@@ -277,7 +323,7 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
     }
 
     return {
-        register, login, checkLogin, getProfile, editProfile
+        register, login, logout, checkLogin, getProfile, editProfile
     }
 
 }

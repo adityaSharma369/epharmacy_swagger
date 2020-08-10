@@ -40,6 +40,23 @@ const ManufacturerController = function (Validator, rabbitMQ, manufacturerRecord
         }
     }
 
+    async function manufacturerListLite(req, res, next) {
+        try {
+            let filter = {};
+            if (typeof req.body.search != "undefined") {
+                filter = {
+                    $or: [{title: {$regex: req.body.search, $options: 'si'}}]
+                }
+            }
+            filter["is_deleted"] = false
+            let response = await manufacturerRecord.getManufacturers(filter);
+            res.respond({http_code: 200, msg: 'list', data: response})
+
+        } catch (e) {
+            res.respond({http_code: 500, error: e.message})
+        }
+    }
+
     async function addManufacturer(req, res, next) {
 
         try {
@@ -62,8 +79,8 @@ const ManufacturerController = function (Validator, rabbitMQ, manufacturerRecord
                     let manufacturerObject = {
                         "title": req.body["title"],
                         "description": req.body["description"],
-                        "is_active":true,
-                        "is_deleted":false,
+                        "is_active": true,
+                        "is_deleted": false,
                     };
                     let response = await manufacturerRecord.addManufacturer(manufacturerObject);
                     res.respond({http_code: 200, msg: 'manufacturer added', data: response})
@@ -145,7 +162,7 @@ const ManufacturerController = function (Validator, rabbitMQ, manufacturerRecord
         try {
             let rules = {
                 'manufacturer_id': 'required|objectId|exists:manufacturers,_id',
-                'type':"in:rx,otc"
+                'type': "in:rx,otc"
             };
             let validation = new Validator(req.body, rules);
 
@@ -160,13 +177,13 @@ const ManufacturerController = function (Validator, rabbitMQ, manufacturerRecord
                 try {
                     let manufacturer_id = req.body["manufacturer_id"]
                     let manufacturer = await manufacturerRecord.getManufacturer({"_id": manufacturer_id})
-                    if(req.body["title"] !== null){
+                    if (req.body["title"] !== null) {
                         manufacturer["title"] = req.body["title"]
                     }
-                    if(req.body["description"] !== null){
+                    if (req.body["description"] !== null) {
                         manufacturer["description"] = req.body["description"]
                     }
-                    let data = await manufacturerRecord.editManufacturer({"_id": manufacturer_id},manufacturer);
+                    let data = await manufacturerRecord.editManufacturer({"_id": manufacturer_id}, manufacturer);
                     return res.respond({
                         http_code: 200,
                         msg: 'manufacturer edited',
@@ -204,14 +221,14 @@ const ManufacturerController = function (Validator, rabbitMQ, manufacturerRecord
                     let manufacturer_id = req.body.manufacturer_id
                     let msg = ""
                     let manufacturer = await manufacturerRecord.getManufacturer({"_id": manufacturer_id})
-                    if(manufacturer["is_active"] === false){
+                    if (manufacturer["is_active"] === false) {
                         msg = "manufacturer activated"
                         manufacturer["is_active"] = true
-                    }else{
+                    } else {
                         msg = "manufacturer de_activated"
                         manufacturer["is_active"] = false
                     }
-                    let data = await manufacturerRecord.editManufacturer({"_id": manufacturer_id},manufacturer);
+                    let data = await manufacturerRecord.editManufacturer({"_id": manufacturer_id}, manufacturer);
                     return res.respond({
                         http_code: 200,
                         msg: msg,
@@ -228,7 +245,13 @@ const ManufacturerController = function (Validator, rabbitMQ, manufacturerRecord
     }
 
     return {
-        getAllManufacturers, addManufacturer, viewManufacturer, deleteManufacturer, editManufacturer, toggleManufacturer
+        getAllManufacturers,
+        addManufacturer,
+        viewManufacturer,
+        deleteManufacturer,
+        editManufacturer,
+        toggleManufacturer,
+        manufacturerListLite
     }
 
 }

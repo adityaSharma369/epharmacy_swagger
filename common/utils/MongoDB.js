@@ -11,6 +11,7 @@ const MoleculeModel = require('../models/molecule.model')
 const ProductModel = require('../models/product.model')
 const ProductImageModel = require('../models/product_image.model')
 const SymptomModel = require('../models/symptom.model')
+const CategoryProduct = require('../models/category_product.model')
 
 const MongoDB = function () {
 
@@ -27,7 +28,7 @@ const MongoDB = function () {
         mongoose = MoleculeModel(mongoose);
         mongoose = ProductModel(mongoose);
         mongoose = ProductImageModel(mongoose);
-        mongoose = SymptomModel(mongoose);
+        mongoose = CategoryProduct(mongoose);
 
         mongoose.connect(mongoDbUrl, {useNewUrlParser: true, useUnifiedTopology: true}).then(result => {
             console.log("database connection successful .. ")

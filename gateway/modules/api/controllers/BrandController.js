@@ -31,6 +31,18 @@ const BrandController = function (Validator, rabbitMQ, brandsRecord) {
         }
     }
 
+    async function brandListLite(req, res, next) {
+
+        try {
+            let productObject = req.body
+            let response = await rabbitMQ.execute("inventory.brand.listLite", productObject, 100)
+            res.respond(JSON.parse(response.toString()))
+        } catch (e) {
+            res.respond({http_code: 500, error: e.message})
+        }
+
+    }
+
     async function addBrand(req, res, next) {
 
         try {
@@ -53,8 +65,8 @@ const BrandController = function (Validator, rabbitMQ, brandsRecord) {
                     let brandsObject = {
                         "title": req.body["title"],
                         "description": req.body["description"],
-                        "is_active":true,
-                        "is_deleted":false,
+                        "is_active": true,
+                        "is_deleted": false,
                     };
                     let response = await rabbitMQ.execute("inventory.brand.add", brandsObject, 100)
                     res.respond(JSON.parse(response.toString()))
@@ -147,7 +159,7 @@ const BrandController = function (Validator, rabbitMQ, brandsRecord) {
 
             validation.passes(async () => {
                 try {
-                   let brandObj = req.body
+                    let brandObj = req.body
                     let response = await rabbitMQ.execute("inventory.brand.edit", brandObj, 100)
                     res.respond(JSON.parse(response.toString()))
                 } catch (e) {
@@ -195,7 +207,7 @@ const BrandController = function (Validator, rabbitMQ, brandsRecord) {
     }
 
     return {
-        getAllBrands, addBrand, viewBrand, deleteBrand, editBrand, toggleBrand
+        getAllBrands, addBrand, viewBrand, deleteBrand, editBrand, toggleBrand, brandListLite
     }
 
 }

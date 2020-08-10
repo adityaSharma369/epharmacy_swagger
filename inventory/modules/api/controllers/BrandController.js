@@ -40,6 +40,23 @@ const BrandController = function (Validator, rabbitMQ, brandRecord) {
         }
     }
 
+    async function brandListLite(req, res, next) {
+
+        try {
+            let filter = {};
+            if (typeof req.body.search != "undefined") {
+                filter = {
+                    $or: [{title: {$regex: req.body.search, $options: 'si'}}]
+                }
+            }
+            filter["is_deleted"] = false
+            let response = await brandRecord.getBrands(filter);
+            res.respond({http_code: 200, msg: 'list', data: response})
+        } catch (e) {
+            res.respond({http_code: 500, error: e.message})
+        }
+    }
+
     async function addBrand(req, res, next) {
 
         try {
@@ -62,8 +79,8 @@ const BrandController = function (Validator, rabbitMQ, brandRecord) {
                     let brandObject = {
                         "title": req.body["title"],
                         "description": req.body["description"],
-                        "is_active":true,
-                        "is_deleted":false,
+                        "is_active": true,
+                        "is_deleted": false,
                     };
                     let response = await brandRecord.addBrand(brandObject);
                     res.respond({http_code: 200, msg: 'brand added', data: response})
@@ -159,13 +176,13 @@ const BrandController = function (Validator, rabbitMQ, brandRecord) {
                 try {
                     let brand_id = req.body["brand_id"]
                     let brand = await brandRecord.getBrand({"_id": brand_id})
-                    if(req.body["title"] !== null){
+                    if (req.body["title"] !== null) {
                         brand["title"] = req.body["title"]
                     }
-                    if(req.body["description"] !== null){
+                    if (req.body["description"] !== null) {
                         brand["description"] = req.body["description"]
                     }
-                    let data = await brandRecord.editBrand({"_id": brand_id},brand);
+                    let data = await brandRecord.editBrand({"_id": brand_id}, brand);
                     return res.respond({
                         http_code: 200,
                         msg: 'brand edited',
@@ -203,14 +220,14 @@ const BrandController = function (Validator, rabbitMQ, brandRecord) {
                     let brand_id = req.body.brand_id
                     let msg = ""
                     let brand = await brandRecord.getBrand({"_id": brand_id})
-                    if(brand["is_active"] === false){
+                    if (brand["is_active"] === false) {
                         msg = "brand activated"
                         brand["is_active"] = true
-                    }else{
+                    } else {
                         msg = "brand de_activated"
                         brand["is_active"] = false
                     }
-                    let data = await brandRecord.editBrand({"_id": brand_id},brand);
+                    let data = await brandRecord.editBrand({"_id": brand_id}, brand);
                     return res.respond({
                         http_code: 200,
                         msg: msg,
@@ -227,7 +244,7 @@ const BrandController = function (Validator, rabbitMQ, brandRecord) {
     }
 
     return {
-        getAllBrands, addBrand, viewBrand, deleteBrand, editBrand, toggleBrand
+        getAllBrands, addBrand, viewBrand, deleteBrand, editBrand, toggleBrand,brandListLite
     }
 
 }

@@ -7,10 +7,12 @@ module.exports.apiRouter = (dependencies, rmq) => {
     rmq.routes = {
         'user.account.register': AccountInvoker('register'),
         'user.account.login': AccountInvoker('login'),
+        'user.account.logout': AccountInvoker('logout'),
         'user.account.checkLogin': AccountInvoker('checkLogin'),
         'user.account.getProfile': AccountInvoker('getProfile'),
         'user.account.editProfile': AccountInvoker('editProfile'),
         'user.list': UserInvoker('getAllUsers'),
+        'user.listLite': UserInvoker('userListLite'),
         'user.add': UserInvoker('addUser'),
         'user.view': UserInvoker('viewUser'),
         'user.edit': UserInvoker('editUser'),

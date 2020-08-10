@@ -31,6 +31,19 @@ const ManufacturerController = function (Validator, rabbitMQ, manufacturersRecor
         }
     }
 
+    async function manufacturerListLite(req, res, next) {
+
+        try {
+
+            let productObject = req.body
+            let response = await rabbitMQ.execute("inventory.manufacturer.listLite", productObject, 100)
+            res.respond(JSON.parse(response.toString()))
+
+        } catch (e) {
+            res.respond({http_code: 500, error: e.message})
+        }
+    }
+
     async function addManufacturer(req, res, next) {
 
         try {
@@ -53,8 +66,8 @@ const ManufacturerController = function (Validator, rabbitMQ, manufacturersRecor
                     let manufacturersObject = {
                         "title": req.body["title"],
                         "description": req.body["description"],
-                        "is_active":true,
-                        "is_deleted":false,
+                        "is_active": true,
+                        "is_deleted": false,
                     };
                     let response = await rabbitMQ.execute("inventory.manufacturer.add", manufacturersObject, 100)
                     res.respond(JSON.parse(response.toString()))
@@ -147,7 +160,7 @@ const ManufacturerController = function (Validator, rabbitMQ, manufacturersRecor
 
             validation.passes(async () => {
                 try {
-                   let manufacturerObj = req.body
+                    let manufacturerObj = req.body
                     let response = await rabbitMQ.execute("inventory.manufacturer.edit", manufacturerObj, 100)
                     res.respond(JSON.parse(response.toString()))
                 } catch (e) {
@@ -195,7 +208,13 @@ const ManufacturerController = function (Validator, rabbitMQ, manufacturersRecor
     }
 
     return {
-        getAllManufacturers, addManufacturer, viewManufacturer, deleteManufacturer, editManufacturer, toggleManufacturer
+        getAllManufacturers,
+        addManufacturer,
+        viewManufacturer,
+        deleteManufacturer,
+        editManufacturer,
+        toggleManufacturer,
+        manufacturerListLite
     }
 
 }

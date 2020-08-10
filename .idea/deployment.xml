@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="52.221.46.156">
+  <component name="PublishConfigData" serverName="epharmacy">
     <serverData>
-      <paths name="52.221.46.156">
+      <paths name="epharmacy">
         <serverdata>
           <mappings>
-            <mapping deploy="/var/www/epharmacy_test" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/home/anudeep/epharmacy_api" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
