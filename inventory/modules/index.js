@@ -14,6 +14,10 @@ module.exports.apiRouter = (dependencies, rmq) => {
         'inventory.product.edit': productInvoker('editProduct'),
         'inventory.product.delete': productInvoker('deleteProduct'),
         'inventory.product.toggle': productInvoker('toggleProduct'),
+        'inventory.product.uploadImage': productInvoker("uploadProductImage"),
+        'inventory.product.makePrimaryImage': productInvoker("makePrimaryImage"),
+        'inventory.product.productImages': productInvoker("productImages"),
+        'inventory.product.deleteImage': productInvoker("deleteImage"),
 
         'inventory.molecule.list': moleculeInvoker('getAllMolecules'),
         'inventory.molecule.add': moleculeInvoker('addMolecule'),

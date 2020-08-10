@@ -6,7 +6,7 @@ const queueName = env.RABBIT_MQ_QUEUE_NAME
 const pattern = env.RABBIT_MQ_PATTERN
 
 rmq = RabbitMQ()
-
+CURRENT_DOMAIN=env.CURRENT_DOMAIN
 const dependencies = require('./dependencies')();
 const modules = require('./modules');
 

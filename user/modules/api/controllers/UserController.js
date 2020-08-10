@@ -38,10 +38,15 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
                         }]
                     }
                 }
-                filter["is_deleted"]=false
+                filter["is_deleted"] = false
                 let userDetails = await userRecord.paginate(filter, "", limit, page, "");
+                for (let i = 0; i < userDetails.docs.length; i++) {
+                    if (userDetails.docs[i].image !== null && userDetails.docs[i].image !== undefined) {
+                        userDetails.docs[i].image = CURRENT_DOMAIN + "/profile_pics/" + userDetails.docs[i].image
+                    }
+                }
                 res.respond({http_code: 200, msg: 'users list', data: userDetails})
-            })
+            });
         } catch (e) {
             // error is unknown
             res.respond({http_code: 500, error: e.message})
@@ -77,7 +82,7 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
                         "phone": req.body["phone"],
                         "role": req.body["role"],
                         "is_active": true,
-                        "is_deleted":false,
+                        "is_deleted": false,
                         "is_phone_verified": false,
                         "is_email_verified": false
                     });
@@ -99,7 +104,7 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
 
         try {
             let rules = {
-                "user_id":"required|objectId|exists:users,_id"
+                "user_id": "required|objectId|exists:users,_id"
             };
 
             let validation = new Validator(req.body, rules);
@@ -114,9 +119,12 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
             validation.passes(async () => {
                 try {
                     let userObject = {
-                        "_id":req.body["user_id"],
+                        "_id": req.body["user_id"],
                     }
                     let userDetails = await userRecord.getUser(userObject);
+                    if (userDetails.image !== null && userDetails.image !== undefined) {
+                        userDetails.image = CURRENT_DOMAIN + "/profile_pics/" + userDetails.image
+                    }
                     res.respond({http_code: 200, msg: 'user details', data: userDetails})
                 } catch (e) {
                     res.respond({http_code: 500, error: e.message})
@@ -133,7 +141,7 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
 
         try {
             let rules = {
-                "user_id":"required|objectId|exists:users,_id"
+                "user_id": "required|objectId|exists:users,_id"
             };
 
             let validation = new Validator(req.body, rules);
@@ -150,7 +158,7 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
                     let userObject = {
                         "_id": req.body.user_id
                     }
-                    let userDetails = await userRecord.editUser(userObject,{"is_deleted":true});
+                    let userDetails = await userRecord.editUser(userObject, {"is_deleted": true});
                     res.respond({http_code: 200, msg: 'user deleted', data: userDetails})
                 } catch (e) {
                     // input validation was successful
@@ -179,7 +187,6 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
             validation.passes(async () => {
                 let user_id = req.body["user_id"]
                 let userObject = await userRecord.getUser({"_id": user_id})
-                // userObject = userObject[0]
                 if (req.body["name"] !== null) {
                     userObject["name"] = req.body["name"]
                 }
@@ -207,7 +214,10 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
                 if (req.body["membership_type"] !== null) {
                     userObject["membership_type"] = req.body["membership_type"]
                 }
-                let data = await userRecord.editUser({"_id": user_id},userObject);
+                if (req.body["image"] !== null) {
+                    userObject["image"] = req.body["image"]
+                }
+                let data = await userRecord.editUser({"_id": user_id}, userObject);
                 return res.respond({
                     http_code: 200,
                     msg: 'profile edited',
@@ -216,8 +226,6 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
             });
 
         } catch (e) {
-            // error is unknown
-            console.log(e);
             res.respond({http_code: 500, error: e.message})
         }
     }
@@ -238,14 +246,14 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
                 let user_id = req.body.user_id
                 let msg = ""
                 let userObject = await userRecord.getUser({"_id": user_id})
-                if(userObject["is_active"] === false){
+                if (userObject["is_active"] === false) {
                     msg = "user activated"
                     userObject["is_active"] = true
-                }else{
+                } else {
                     msg = "user de_activated"
                     userObject["is_active"] = false
                 }
-                let data = await userRecord.editUser({"_id": user_id},userObject);
+                let data = await userRecord.editUser({"_id": user_id}, userObject);
                 return res.respond({
                     http_code: 200,
                     msg: msg,
@@ -254,12 +262,9 @@ const UserController = function (Validator, rabbitMQ, userRecord) {
             });
 
         } catch (e) {
-            // error is unknown
-            console.log(e);
             res.respond({http_code: 500, error: e.message})
         }
     }
-
 
     return {
         getAllUsers, addUser, viewUser, deleteUser, editUser, toggleUser

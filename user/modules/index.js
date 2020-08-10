@@ -16,6 +16,7 @@ module.exports.apiRouter = (dependencies, rmq) => {
         'user.edit': UserInvoker('editUser'),
         'user.delete': UserInvoker('deleteUser'),
         'user.toggle': UserInvoker('toggleUser'),
+        'user.uploadImage': UserInvoker('uploadImage'),
     };
 
 };

@@ -36,6 +36,9 @@ const Model = function (mongoose) {
         is_email_verified: {
             type: String
         },
+        image:{
+            type: String
+        },
         is_active: {
             type: Boolean
         },

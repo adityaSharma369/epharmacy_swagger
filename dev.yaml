@@ -15,6 +15,7 @@ services:
       - RABBIT_MQ_EXCHANGE_NAME=framework
       - MONGODB_DBNAME=user
       - MONGODB_HOST=mongodb
+      - CURRENT_DOMAIN=http://localhost:8080/api/static
       - JWT_SECRET=epharmacy
       - PORT=80
     #      - DEBUG=*
@@ -38,6 +39,7 @@ services:
       - RABBIT_MQ_QUEUE_NAME=user
       - RABBIT_MQ_EXCHANGE_NAME=framework
       - MONGODB_DBNAME=user
+      - CURRENT_DOMAIN=http://localhost:8080/api/static
       - MONGODB_HOST=mongodb
       - PORT=80
       - JWT_SECRET=epharmacy
@@ -63,6 +65,8 @@ services:
       - MONGODB_DBNAME=inventory
       - MONGODB_HOST=mongodb
       - PORT=80
+      - CURRENT_DOMAIN=http://localhost:8080/api/static
+
     #      - DEBUG=*
     volumes:
       - ./inventory:/var/app/

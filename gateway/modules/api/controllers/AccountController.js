@@ -135,8 +135,42 @@ const AccountController = function (Validator, rabbitMQ, userRecord) {
         }
     }
 
+    async function uploadPic(req, res, next) {
+        try {
+            const image = req.file
+            const user_id = req.decoded["_id"]
+            const target_path = './uploads/profile_pics/'
+            if (!fs.existsSync(target_path)) {
+                fs.mkdirSync(target_path, {recursive: true});
+            }
+            fs.rename("./uploads/" + image.filename, target_path + "/" + image.filename, function (err) {
+                if (err) {
+                    return res.err({
+                        error: err,
+                        http_code: 500
+                    });
+                }
+            })
+            let userObject = {
+                user_id: user_id,
+                image: image.filename
+            }
+            let userResponse = await rabbitMQ.execute("user.edit", userObject, 100)
+            userResponse = JSON.parse(userResponse.toString())
+            if(userResponse.http_code === 200){
+                userResponse.msg = "image uploaded"
+            }
+            res.respond(userResponse)
+        } catch (e) {
+            // error is unknown
+            console.log(e);
+            res.respond({http_code: 500, error: e.message})
+        }
+    }
+
+
     return {
-        register, login, checkLogin, getProfile, editProfile
+        register, login, checkLogin, getProfile, editProfile, uploadPic
     }
 
 }

@@ -13,6 +13,7 @@ const MongoDB = require('../utils/MongoDB');
 const Validator = require('../utils/Validator')
 
 const ProductRecord = require('./db/ProductRecord');
+const ProductImageRecord = require('./db/ProductImageRecord');
 const BrandRecord = require('./db/BrandRecord');
 const MoleculeRecord = require('./db/MoleculeRecord');
 const ManufacturerRecord = require('./db/ManufacturerRecord');
@@ -33,14 +34,14 @@ const APIDependencies = async function (diProvider) {
     diProvider.service('Validator', Validator, 'MongoDB');
 
     diProvider.service('ProductRecord', ProductRecord, 'MongoDB');
+    diProvider.service('ProductImageRecord', ProductImageRecord, 'MongoDB');
     diProvider.service('MoleculeRecord', MoleculeRecord, 'MongoDB');
     diProvider.service('ManufacturerRecord', ManufacturerRecord, 'MongoDB');
     diProvider.service('SymptomRecord', SymptomRecord, 'MongoDB');
     diProvider.service('CategoryRecord', CategoryRecord, 'MongoDB');
     diProvider.service('BrandRecord', BrandRecord, 'MongoDB');
 
-    diProvider.service('ProductController', ProductController, 'Validator', 'RabbitMQ', 'ProductRecord',
-        'MoleculeRecord','ManufacturerRecord','CategoryRecord','BrandRecord');
+    diProvider.service('ProductController', ProductController, 'Validator', 'RabbitMQ', 'ProductRecord','ProductImageRecord');
 
     diProvider.service('BrandController', BrandController, 'Validator', 'RabbitMQ', 'BrandRecord');
     diProvider.service('ManufacturerController', ManufacturerController, 'Validator', 'RabbitMQ', 'ManufacturerRecord');

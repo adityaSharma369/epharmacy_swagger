@@ -88,7 +88,7 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
                     let email = req.body["email"]
                     let password = req.body["password"]
                     let data = await userRecord.getUser({"email": email});
-                    let userData = data[0]
+                    let userData = data
                     console.log(bcrypt.compareSync(password, userData.password), "-------------------------------")
                     if (!userData || !userData.is_active || !bcrypt.compareSync(password, userData.password)) {
                         return res.respond({
@@ -200,8 +200,11 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
             validation.passes(async () => {
                 let user_id = req.body["user_id"]
                 let data = await userRecord.getUser({"_id": user_id});
-                let userData = data[0]
+                let userData = data
                 delete userData.password
+                if (userData.image !== null && userData.image !== undefined) {
+                    userData.image = CURRENT_DOMAIN + "/profile_pics/" + userData.image
+                }
                 return res.respond({
                     http_code: 200,
                     msg: 'user details',
@@ -233,7 +236,7 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
             validation.passes(async () => {
                 let user_id = req.body["user_id"]
                 let userObject = await userRecord.getUser({"_id": user_id})
-                userObject = userObject[0]
+                userObject = userObject
                 if (req.body["name"] !== null) {
                     userObject["name"] = req.body["name"]
                 }
@@ -258,7 +261,7 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
                 if (req.body["gender"] !== null) {
                     userObject["gender"] = req.body["gender"]
                 }
-                let data = await userRecord.editUser({"_id": user_id},userObject);
+                let data = await userRecord.editUser({"_id": user_id}, userObject);
                 return res.respond({
                     http_code: 200,
                     msg: 'profile edited'
