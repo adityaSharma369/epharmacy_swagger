@@ -25,5 +25,5 @@ services:
 networks:
   default:
     external:
-      name: nodejs_framework
+      name: epharmacy
 
