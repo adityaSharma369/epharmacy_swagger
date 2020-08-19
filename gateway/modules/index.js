@@ -13,6 +13,7 @@ module.exports.apiRouter = (dependencies, app) => {
     const SymptomInvoker = makeRouteInvoker(dependencies, 'SymptomController')
     const BrandInvoker = makeRouteInvoker(dependencies, 'BrandController')
     const CategoryInvoker = makeRouteInvoker(dependencies, 'CategoryController')
+    const AddressInvoker = makeRouteInvoker(dependencies, 'AddressController')
 
 
     middleware.AttachRequestHelpers(dependencies, app)
@@ -27,7 +28,10 @@ module.exports.apiRouter = (dependencies, app) => {
 
     app.get('/api/account/getProfile', AccountInvoker('getProfile'));
     app.post('/api/account/editProfile', AccountInvoker('editProfile'));
-    app.post('/api/account/uploadImage',upload.single("image"),AccountInvoker("uploadPic"))
+    app.post('/api/account/getAddress', AccountInvoker('getAddress'));
+    app.post('/api/account/addAddress', AccountInvoker('addAddress'));
+    app.post('/api/account/makeAddressPrimary', AccountInvoker('makeAddressPrimary'));
+    app.post('/api/account/uploadImage', upload.single("image"), AccountInvoker("uploadPic"))
 
     app.post('/api/user/list', UserInvoker("getAllUsers"));
     app.post('/api/user/listLite', UserInvoker("userListLite"));
@@ -36,18 +40,27 @@ module.exports.apiRouter = (dependencies, app) => {
     app.post('/api/user/edit', UserInvoker("editUser"));
     app.get('/api/user/delete/:user_id', UserInvoker("deleteUser"));
     app.get('/api/user/toggle/:user_id', UserInvoker("toggleUser"));
-    app.post('/api/user/uploadImage',upload.single("image"),UserInvoker("uploadImage"))
+    app.post('/api/user/uploadImage', upload.single("image"), UserInvoker("uploadImage"))
+
+
+    app.post('/api/address/list', AddressInvoker("getAllAddresses"));
+    app.post('/api/address/listLite', AddressInvoker("addressListLite"));
+    app.post('/api/address/add', AddressInvoker("addAddress"));
+    app.get('/api/address/view/:address_id', AddressInvoker("viewAddress"));
+    app.post('/api/address/edit', AddressInvoker("editAddress"));
+    app.get('/api/address/delete/:address_id', AddressInvoker("deleteAddress"));
+    app.get('/api/address/toggle/:address_id', AddressInvoker("toggleAddress"));
 
     app.post('/api/product/list', ProductInvoker("getAllProducts"));
-    app.post('/api/product/add' , ProductInvoker("addProduct"));
+    app.post('/api/product/add', ProductInvoker("addProduct"));
     app.post('/api/product/edit', ProductInvoker("editProduct"));
     app.get('/api/product/delete/:product_id', ProductInvoker("deleteProduct"));
     app.get('/api/product/view/:product_id', ProductInvoker("viewProduct"));
     app.get('/api/product/toggle/:product_id', ProductInvoker("toggleProduct"));
-    app.post('/api/product/uploadProductImage',upload.single("image"),ProductInvoker("uploadProductImage"));
-    app.get('/api/product/makePrimaryImage/:product_image_id',ProductInvoker("makePrimaryImage"));
-    app.get('/api/product/deleteImage/:product_image_id',ProductInvoker("deleteImage"));
-    app.post('/api/product/productImages',ProductInvoker("productImages"));
+    app.post('/api/product/uploadProductImage', upload.single("image"), ProductInvoker("uploadProductImage"));
+    app.get('/api/product/makePrimaryImage/:product_image_id', ProductInvoker("makePrimaryImage"));
+    app.get('/api/product/deleteImage/:product_image_id', ProductInvoker("deleteImage"));
+    app.post('/api/product/productImages', ProductInvoker("productImages"));
 
 
     app.post('/api/molecule/list', MoleculeInvoker("getAllMolecules"));
@@ -85,7 +98,7 @@ module.exports.apiRouter = (dependencies, app) => {
 
     app.post('/api/category/list', CategoryInvoker("getAllCategories"));
     app.post('/api/category/listLite', CategoryInvoker("categoryListLite"));
-    app.post('/api/category/add',upload.single("image"), CategoryInvoker("addCategory"));
+    app.post('/api/category/add', upload.single("image"), CategoryInvoker("addCategory"));
     app.post('/api/category/edit', CategoryInvoker("editCategory"));
     app.post('/api/category/linkProduct', CategoryInvoker("linkProduct"));
     app.post('/api/category/unlinkProduct', CategoryInvoker("unlinkProduct"));

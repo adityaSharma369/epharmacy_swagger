@@ -47,7 +47,6 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
                     let userAddStatus = await userRecord.addUser(userObject);
                     res.respond({http_code: 200, msg: 'user registered', data: userAddStatus})
                 } catch (e) {
-                    console.log(e);
                     return res.err({
                         error: e.message,
                         http_code: 500
@@ -56,7 +55,6 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
             });
 
         } catch (e) {
-            console.log(e);
             return res.err({
                 error: e.message,
                 http_code: 500
@@ -86,7 +84,6 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
                     let password = req.body["password"]
                     let data = await userRecord.getUser({"email": email});
                     let userData = data
-                    console.log(bcrypt.compareSync(password, userData.password), "-------------------------------")
                     if (!userData || !userData.is_active || !bcrypt.compareSync(password, userData.password)) {
                         return res.respond({
                             http_code: 401,
@@ -114,7 +111,6 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
                         });
                     }
                 } catch (e) {
-                    console.log(e);
                     return res.err({
                         error: e.message,
                         http_code: 500
@@ -123,7 +119,6 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
             });
 
         } catch (e) {
-            console.log(e);
             return res.err({
                 error: e.message,
                 http_code: 500
@@ -149,15 +144,12 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
 
             validation.passes(async () => {
                 try {
-                    console.log(req.body)
-                    let checkLogout = await tokenRecord.deleteToken({user_id: req.body.user_id, token: req.body.token})
-                    console.log(checkLogout,"llllllllll")
+                    await tokenRecord.deleteToken({user_id: req.body.user_id, token: req.body.token})
                     return res.respond({
                         http_code: 200,
                         msg: 'logout successful',
                     });
                 } catch (e) {
-                    console.log(e);
                     return res.err({
                         error: e.message,
                         http_code: 500
@@ -165,7 +157,6 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
                 }
             });
         } catch (e) {
-            console.log(e);
             return res.err({
                 error: e.message,
                 http_code: 500
@@ -198,7 +189,6 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
                         });
                     } else {
                         let checkToken = await tokenRecord.getToken({user_id: user._id})
-                        console.log(checkToken,";;;;;;;;;;;;;;;;")
                         if (!checkToken) {
                             return res.respond({
                                 msg: 'not logged in',
@@ -213,7 +203,6 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
                         });
                     }
                 } catch (e) {
-                    console.log(e);
                     return res.err({
                         error: e.message,
                         http_code: 500
@@ -222,7 +211,6 @@ const AccountController = function (Validator, rabbitMQ, userRecord, tokenRecord
             });
 
         } catch (e) {
-            console.log(e);
             return res.err({
                 error: e.message,
                 http_code: 500

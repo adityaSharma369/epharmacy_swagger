@@ -1,5 +1,57 @@
 const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
 
+
+    /**
+     * @swagger
+     * /api/molecule/list:
+     *  post:
+     *    security:
+     *    - JWT: []
+     *    tags:
+     *    - Molecule
+     *    description: list of molecules
+     *    consumes:
+     *     - "application/json"
+     *    produces:
+     *     - application/json
+     *    parameters:
+     *     - in: "body"
+     *       name: "body"
+     *       required: true
+     *       schema: {
+     *           type: object,
+     *          properties: {
+     *           page: {
+     *             type: "number",
+     *             example: "1"
+     *           },
+     *           limit: {
+     *               type: "number",
+     *               example: "10"
+     *           },
+     *           search: {
+     *               type: "string",
+     *               example: ""
+     *           }
+     *          }
+     *       }
+     *    responses:
+     *      '200': {
+     *      "description": "molecules list",
+     *      "content": {
+     *          "application/json": {}
+     *      },
+     *    }
+     *      '401': {
+     *      "description": "user is not logged in",
+     *      "content": {
+     *          "application/json": {}
+     *      }
+     *    }
+     *      '400': {
+     *          "description": "validation errors",
+     *      }
+     */
     async function getAllMolecules(req, res, next) {
 
         try {
@@ -31,6 +83,49 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
         }
     }
 
+    /**
+     * @swagger
+     * /api/molecule/listLite:
+     *  post:
+     *    security:
+     *    - JWT: []
+     *    tags:
+     *    - Molecule
+     *    description: list of molecules
+     *    consumes:
+     *     - "application/json"
+     *    produces:
+     *     - application/json
+     *    parameters:
+     *     - in: "body"
+     *       name: "body"
+     *       required: true
+     *       schema: {
+     *           type: object,
+     *          properties: {
+     *           search: {
+     *               type: "string",
+     *               example: ""
+     *           }
+     *          }
+     *       }
+     *    responses:
+     *      '200': {
+     *      "description": "molecules list",
+     *      "content": {
+     *          "application/json": {}
+     *      },
+     *    }
+     *      '401': {
+     *      "description": "user is not logged in",
+     *      "content": {
+     *          "application/json": {}
+     *      }
+     *    }
+     *      '400': {
+     *          "description": "validation errors",
+     *      }
+     */
     async function moleculeListLite(req, res, next) {
 
         try {
@@ -45,6 +140,53 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
         }
     }
 
+    /**
+     * @swagger
+     * /api/molecule/add:
+     *  post:
+     *    security:
+     *    - JWT: []
+     *    tags:
+     *    - Molecule
+     *    description: Add molecule
+     *    consumes:
+     *     - "application/json"
+     *    produces:
+     *     - application/json
+     *    parameters:
+     *     - in: "body"
+     *       name: "body"
+     *       description: "New Molecule object to be stored"
+     *       required: true
+     *       schema:
+     *         $ref: "#/definitions/Molecule"
+     *    responses:
+     *      '200': {
+     *      "description": "molecule added",
+     *      "content": {
+     *          "application/json": {}
+     *      },
+     *    }
+     *      '401': {
+     *      "description": "user not logged in",
+     *      "content": {
+     *          "application/json": {}
+     *      }
+     *  }
+     * definitions:
+     *     Molecule:
+     *       type: "object"
+     *       required:
+     *       - "title"
+     *       - "description"
+     *       properties:
+     *        title:
+     *          type: "string"
+     *          example: "title"
+     *        description:
+     *          type: "string"
+     *          example: "molecule"
+     */
     async function addMolecule(req, res, next) {
 
         try {
@@ -82,6 +224,42 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
         }
     }
 
+    /**
+     * @swagger
+     * /api/molecule/view/{molecule_id}:
+     *  get:
+     *    security:
+     *    - JWT: []
+     *    tags:
+     *    - Molecule
+     *    description: view molecule
+     *    consumes:
+     *     - "application/json"
+     *    produces:
+     *     - application/json
+     *    parameters:
+     *     - in: "path"
+     *       description: The molecule_id  to view the details of molecule
+     *       name: "molecule_id"
+     *       required: true
+     *    responses:
+     *      '200': {
+     *      "description": "molecule details",
+     *      "content": {
+     *          "application/json": {}
+     *      },
+     *    }
+     *      '401': {
+     *      "description": "user is not logged in",
+     *      "content": {
+     *          "application/json": {}
+     *      }
+     *    }
+     *      '400': {
+     *          "description": "validation errors",
+     *      }
+     */
+
     async function viewMolecule(req, res, next) {
         try {
             let rules = {
@@ -111,6 +289,41 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
         }
     }
 
+    /**
+     * @swagger
+     * /api/molecule/delete/{molecule_id}:
+     *  get:
+     *    security:
+     *    - JWT: []
+     *    tags:
+     *    - Molecule
+     *    description: delete molecule
+     *    consumes:
+     *     - "application/json"
+     *    produces:
+     *     - application/json
+     *    parameters:
+     *     - in: "path"
+     *       description: The molecule_id  to delete the details of molecule
+     *       name: "molecule_id"
+     *       required: true
+     *    responses:
+     *      '200': {
+     *      "description": "molecule deleted",
+     *      "content": {
+     *          "application/json": {}
+     *      },
+     *    }
+     *      '401': {
+     *      "description": "user is not logged in",
+     *      "content": {
+     *          "application/json": {}
+     *      }
+     *    }
+     *      '400': {
+     *          "description": "validation errors",
+     *      }
+     */
     async function deleteMolecule(req, res, next) {
 
         try {
@@ -144,6 +357,54 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
         }
     }
 
+    /**
+     * @swagger
+     * /api/molecule/edit:
+     *  post:
+     *    security:
+     *    - JWT: []
+     *    tags:
+     *    - Molecule
+     *    description: edit molecule
+     *    consumes:
+     *     - "application/json"
+     *    produces:
+     *     - application/json
+     *    parameters:
+     *     - in: "body"
+     *       name: "body"
+     *       required: true
+     *       schema: {
+     *           type: object,
+     *          properties: {
+     *           molecule_id: {
+     *             type: "string",
+     *             example: "5f32603725043800133d343c"
+     *           },
+     *           title: {
+     *               type: "string",
+     *               example: "ladakh"
+     *           }
+     *          }
+     *       }
+     *    responses:
+     *      '200': {
+     *      "description": "molecule edited",
+     *      "content": {
+     *          "application/json": {}
+     *      },
+     *    }
+     *      '401': {
+     *      "description": "user not logged in",
+     *      "content": {
+     *          "application/json": {}
+     *      }
+     *  }
+     *      '400': {
+     *          "description": "validation errors",
+     *      }
+     */
+
     async function editMolecule(req, res, next) {
 
         try {
@@ -175,6 +436,41 @@ const MoleculeController = function (Validator, rabbitMQ, moleculesRecord) {
         }
     }
 
+    /**
+     * @swagger
+     * /api/molecule/toggle/{molecule_id}:
+     *  get:
+     *    security:
+     *    - JWT: []
+     *    tags:
+     *    - Molecule
+     *    description: deactivate molecule
+     *    consumes:
+     *     - "application/json"
+     *    produces:
+     *     - application/json
+     *    parameters:
+     *     - in: "path"
+     *       description: The molecule_id  to deactivate the molecule
+     *       name: "molecule_id"
+     *       required: true
+     *    responses:
+     *      '200': {
+     *      "description": "molecule de_activated",
+     *      "content": {
+     *          "application/json": {}
+     *      },
+     *    }
+     *      '401': {
+     *      "description": "user is not logged in",
+     *      "content": {
+     *          "application/json": {}
+     *      }
+     *    }
+     *      '400': {
+     *          "description": "validation errors",
+     *      }
+     */
     async function toggleMolecule(req, res, next) {
 
         try {

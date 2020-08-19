@@ -6,6 +6,7 @@ const dependencies = require('./dependencies')();
 const modules = require('./modules');
 const uuid = require('uuid');
 const cors = require('cors');
+const util = require('util')
 multer = require('multer');
 mime = require("mime");
 path = require('path');
@@ -19,7 +20,7 @@ let storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         let ext = file.mimetype.split("/")[1]
-        if(["jpeg","jpg","png","JPEG","JPG"].indexOf(ext) === -1){
+        if (["jpeg", "jpg", "png", "JPEG", "JPG"].indexOf(ext) === -1) {
             ext = "jpeg"
         }
         cb(null, uuid.v4() + '.' + ext);
@@ -28,5 +29,7 @@ let storage = multer.diskStorage({
 
 upload = multer({storage: storage});
 app.use('/api/static', express.static(path.join(__dirname, 'uploads')));
+
+
 modules.apiRouter(dependencies, app);
 app.listen(PORT, () => debug(`Listening on ${PORT}!`));

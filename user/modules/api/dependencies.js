@@ -3,6 +3,7 @@ const _ = require('lodash');
 const DefaultController = require('./controllers');
 const UserController = require('./controllers/UserController');
 const AccountController = require('./controllers/AccountController');
+const AddressController = require('./controllers/AddressController');
 
 
 const RabbitMQ = require('../utils/RabbitMQ');
@@ -11,6 +12,7 @@ const Validator = require('../utils/Validator')
 
 const UserRecord = require('./db/UserRecord');
 const TokenRecord = require('./db/TokenRecord');
+const AddressRecord = require('./db/AddressRecord');
 
 env = process.env;
 const exchange = env.RABBIT_MQ_EXCHANGE_NAME
@@ -27,9 +29,11 @@ const APIDependencies = async function (diProvider) {
 
     diProvider.service('UserRecord', UserRecord, 'MongoDB');
     diProvider.service('TokenRecord', TokenRecord, 'MongoDB');
+    diProvider.service('AddressRecord', AddressRecord, 'MongoDB');
 
     diProvider.service('DefaultController', DefaultController);
     diProvider.service('UserController', UserController, 'Validator', 'RabbitMQ', 'UserRecord');
+    diProvider.service('AddressController', AddressController, 'Validator', 'RabbitMQ', 'AddressRecord','UserRecord');
     diProvider.service('AccountController', AccountController, 'Validator', 'RabbitMQ', 'UserRecord','TokenRecord');
 };
 
